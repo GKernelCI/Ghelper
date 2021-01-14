@@ -63,9 +63,8 @@ actions:
     images:
       kernel:
         image_arg: '-kernel {kernel}'
-        url: http://build2.baylibre.com:9080/clabbe/stable/x86_64/default/defconfig/v5.10.4/bzImage
+        url: KERNEL_IMAGE_URL
         type: image
-        sha256sum: 3b83308373b24ecad103a227d6198b8234eccc2ba31ddc4e58adccd30530f9cb
       gentoo:
         image_arg: '-drive format=raw,file={gentoo}'
         url: downloads://gentoo.ext2
