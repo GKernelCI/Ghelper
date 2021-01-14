@@ -8,6 +8,8 @@ import subprocess
 import sys
 import tarfile
 
+linuxpatches_folder = "../../linux-patches/"
+
 if sys.version_info.major == 3:
     from urllib.request import urlretrieve
     import lzma
@@ -166,10 +168,9 @@ else:
         fout.write(file_content)
 
 
-mypath = "../linux-patches/"
 
 f = []
-for (dirpath, dirnames, filenames) in walk(mypath):
+for (dirpath, dirnames, filenames) in walk(linuxpatches_folder):
     f.extend(filenames)
     break
 
@@ -181,14 +182,14 @@ for i in filenames:
 
 if new_version != 1:
     if patch_found == 0:
-        shutil.move(incremental_patch_name[:-3], '../linux-patches/' +
+        shutil.move(incremental_patch_name[:-3], linuxpatches_folder +
                     incremental_patch_name[:-3] + '.patch')
 else:
     if patch_found == 0:
-        shutil.move(patch_name[:-3], '../linux-patches/' + patch_name[:-3] +
+        shutil.move(patch_name[:-3], linuxpatches_folder + patch_name[:-3] +
                     '.patch')
 
-os.chdir(mypath)
+os.chdir(linuxpatches_folder)
 
 base = []
 extra = []
@@ -211,24 +212,3 @@ print("experimental patch")
 print(experimental)
 
 cwd = os.getcwd()
-
-bashCommand = "chmod +x patch-kernel.sh"
-print(bashCommand)
-process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
-print(output)
-eprint(error)
-
-bashCommand = "chmod +x ../clean.sh"
-print(bashCommand)
-process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
-print(output)
-eprint(error)
-
-bashCommand = "chmod +x find.sh"
-print(bashCommand)
-process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
-print(output)
-eprint(error)
