@@ -13,5 +13,29 @@ tmpyml=$(mktemp "/tmp/XXXXXX.yml")
 KERNEL_STORAGE_URL=http://"${STORAGE_SERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/bzImage
 sed -e "s@KERNEL_IMAGE_URL@${KERNEL_STORAGE_URL}@g" ${SCRIPT_DIR}/lava/job/gentoo-boot.yml > $tmpyml
 
-lavacli -i buildbot jobs submit "$tmpyml"
-rm -f "$tmpyml"
+start_job_get_job_id() {
+  lavacli -i buildbot jobs submit "$tmpyml"
+  rm -f "$tmpyml"
+}
+
+get_job_state() {
+  lavacli --id buildbot jobs show "${job_id}" | grep "state       :" | awk '{print $3}'
+}
+
+check_job_state() {
+  job_state="$(get_job_state)"
+  if [[ $job_state != "Finished" ]]; then
+    echo -n -e "The job $job_id is $job_state"
+    while [[ $job_state != "Finished" ]]; do
+      job_state="$(get_job_state)"
+      sleep 5
+      echo -n -e "."
+    done
+  fi
+  echo The job "${job_id}" is "${job_state}"
+}
+
+job_id=$(start_job_get_job_id)
+check_job_state
+
+lavacli -i buildbot results "${job_id}"
