@@ -6,7 +6,7 @@ BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 
 
-IMAGE_PATH=linux-amd64-build/arch/x86_64/boot/bzImage
+IMAGE_PATH=linux-amd64-build/arch/x86/boot/bzImage
 COPY_IMAGE_PATH="${FILESERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/
 mkdir -p "${COPY_IMAGE_PATH}"
 chmod -R 755 "${COPY_IMAGE_PATH}"
