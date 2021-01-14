@@ -8,7 +8,7 @@ import subprocess
 import sys
 import tarfile
 
-linuxpatches_folder = "../../linux-patches/"
+linuxpatches_folder = "../linux-patches/"
 
 if sys.version_info.major == 3:
     from urllib.request import urlretrieve
