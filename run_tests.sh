@@ -22,6 +22,10 @@ get_job_state() {
   lavacli --id buildbot jobs show "${job_id}" | grep "state       :" | awk '{print $3}'
 }
 
+get_job_results() {
+  lavacli -i buildbot results "${job_id}"
+}
+
 check_job_state() {
   job_state="$(get_job_state)"
   if [[ $job_state != "Finished" ]]; then
@@ -35,7 +39,28 @@ check_job_state() {
   echo The job "${job_id}" is "${job_state}"
 }
 
+get_failed_tasks() {
+  echo "$(get_job_results)" | grep fail
+}
+
+check_tasks() {
+  failed_tasks="$(get_failed_tasks)"
+  if [ "$failed_tasks" ]; then
+    echo "Following lava tasks failed"
+    echo "$failed_tasks"
+    # failing this task
+    exit 1
+  else
+    echo "Lava tasks runned succesfully"
+    echo "$get_job_results"
+  fi
+}
+
+display_lava_url () {
+  echo "LAVAJOB_URL=http://$LAVA_SERVER/scheduler/job/$job_id"
+}
+
 job_id=$(start_job_get_job_id)
 check_job_state
-
-lavacli -i buildbot results "${job_id}"
+check_tasks
+display_lava_url
