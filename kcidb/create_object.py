@@ -59,101 +59,43 @@ def get_kernel_hash(kernel_version):
 
 base_kernel_hash=str(get_kernel_hash(kernel_version).stdout).strip("\n")
 
-json_template = """
-{
-    "revisions": [
-        {
-            "id": "2c85ebc57b3e1817b6ce1a6b703928e113a90442",
-            "origin": "gkernelci",
-            "git_repository_url": "git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
-            "git_repository_branch": "5.8",
-            "contacts": [
-                "Mike Pagano <mpagano@gentoo.org>"
+r_id = str(base_kernel_hash) + "+" + str(patchset_hash)
+print(r_id)
+
+data = dict(
+    version=dict(
+        major=3,
+        minor=0
+    ),
+    revisions=[
+        dict(
+            id=r_id,
+            origin="gkernelci",
+            git_repository_url="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
+            git_repository_branch=kernel_version,
+            contacts=[
+                "Mike Pagano <mpagano@gentoo.org>",
+                "Alice Ferrazzi <alicef@gentoo.org>"
             ],
-            "patch_mboxes": [
-                {
-                    "name": "1500_XATTR_USER_PREFIX.patch",
-                    "url": "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1500_XATTR_USER_PREFIX.patch?h=5.8&id=1d996290ed3f1ffdc4ea2d9b4c4d2cf19ccc77d3"
-                },
-                {
-                    "name": "1510_fs-enable-link-security-restrictions-by-default.patch",
-                    "url": "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1510_fs-enable-link-security-restrictions-by-default.patch?h=5.8&id=1d996290ed3f1ffdc4ea2d9b4c4d2cf19ccc77d3"
-                }
-            ],
-            "log_url": "https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16852/raw",
-            "valid": true
-        }
+            patch_mboxes=get_patches_list(),
+            log_url="https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16852/raw",
+            valid=args.result,
+        ),
     ],
-    "builds": [
-        {
-            "id": "gkernelci:50-6",
-            "origin": "gkernelci",
-            "revision_id": "9ece50d8a470ca7235ffd6ac0f9c5f0f201fe2c8+bf3c6a7247ae590c0d2965622961b74b6c99a92fec70d07fa4025cb6fcb944a9",
-            "architecture": "amd64",
-            "log_url": "https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16853/raw",
-            "valid": true,
-            "misc": {
-                "url": "https://kernel-ci.emjay-embedded.co.uk/#/builders/50/builds/6"
-            }
-        }
-    ],
-        "version": {
-        "major": 3,
-        "minor": 0
-        }
-}
-"""
+    builds=[
+        dict(
+            id="gkernelci:50-6",
+            origin="gkernelci",
+            revision_id=r_id,
+            architecture=args.arch,
+            log_url="https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16853/raw",
+            valid=args.result,
+            misc=dict(
+                url="https://kernel-ci.emjay-embedded.co.uk/#/builders/50/builds/5",
+            ),
+        ),
+    ]
+)
 
-def create_object(r_id, r_origin, r_git_repository_url, 
-                  r_git_repository_branch, r_contacts, 
-                  r_patch_mboxes, r_log_url, r_valid, 
-                  b_id, b_origin, b_revision_id, b_architecture, 
-                  b_log_url, b_valid, b_misc_url):
-    data = json.loads(json_template)
-    data['revisions'][0]['id']= r_id
-    data['revisions'][0]['origin']= r_origin
-    data['revisions'][0]['git_repository_url']= r_git_repository_url
-    data['revisions'][0]['git_repository_branch']= r_git_repository_branch
-    data['revisions'][0]['contacts']= r_contacts
-    data['revisions'][0]['patch_mboxes']= r_patch_mboxes
-    data['revisions'][0]['log_url']= r_log_url
-    data['revisions'][0]['valid']= r_valid
-    data['builds'][0]['id']= b_id
-    data['builds'][0]['origin']= b_origin
-    data['builds'][0]['revision_id']= b_revision_id
-    data['builds'][0]['architecture']= b_architecture
-    data['builds'][0]['log_url']= b_log_url
-    data['builds'][0]['valid']= b_valid
-    data['builds'][0]['misc']['url']= b_misc_url
-    with open("data_file.json", "w") as write_file:
-        json.dump(data, write_file)
-
-
-
-r_log_url="test"
-
-print(str(base_kernel_hash) + "+" + str(patchset_hash))
-#revisions variable
-r_id=str(base_kernel_hash) + "+" + str(patchset_hash)
-r_origin="gkernelci"
-r_git_repository_url="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
-r_git_repository_branch=kernel_version
-r_contacts=["Mike Pagano <mpagano@gentoo.org>","Alice Ferrazzi <alicef@gentoo.org>"]
-r_patch_mboxes=get_patches_list()
-r_log_url="https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16852/raw"
-r_valid=args.result
-
-#builds variable
-b_id="gkernelci:50-6"
-b_origin="gkernelci"
-b_revision_id=r_id
-b_architecture=args.arch
-b_log_url="https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16853/raw"
-b_valid=args.result
-b_misc_url="https://kernel-ci.emjay-embedded.co.uk/#/builders/50/builds/5"
-
-
-create_object(r_id, r_origin, r_git_repository_url, r_git_repository_branch, 
-              r_contacts, r_patch_mboxes, r_log_url, r_valid, b_id, b_origin,
-              b_revision_id, b_architecture, b_log_url, b_valid, b_misc_url)
-
+with open("data_file.json", "w") as write_file:
+    json.dump(data, write_file)
