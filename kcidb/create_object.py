@@ -17,8 +17,9 @@ conf_parser.add_argument("-c", "--conf_file",
 args, remaining_argv = conf_parser.parse_known_args()
 defaults = {
     "version": "4.9",
-    "result": "Failed",
-    "architecture": "amd64",
+    "arch": "amd64",
+    "build_name": "test",
+    "build_number": "0",
 }
 if args.conf_file:
     config = ConfigParser()
@@ -37,9 +38,23 @@ parser = argparse.ArgumentParser(
 parser.set_defaults(**defaults)
 parser.add_argument("-version", "--version", help="version number",
                     required=True)
-parser.add_argument("-result", "--result", help="Test result",
+parser.add_argument("-build_result", "--build_result", help="Test result",
+                    required=True)
+parser.add_argument("-revision_result", "--revision_result", help="Test result",
                     required=True)
 parser.add_argument("-arch", "--arch", help="Architecture tested",
+                    required=True)
+parser.add_argument("-bname", "--bname", help="Builder name",
+                    required=True)
+parser.add_argument("-bnumber", "--bnumber", help="Builder number",
+                    required=True)
+parser.add_argument("-patchlognumber", "--patchlognumber", help="Builder name",
+                    required=True)
+parser.add_argument("-buildlognumber", "--buildlognumber", help="Builder number",
+                    required=True)
+parser.add_argument("-buildernumber", "--buildernumber", help="Builder name",
+                    required=True)
+parser.add_argument("-buildnumber", "--buildnumber", help="Builder number",
                     required=True)
 args = parser.parse_args(remaining_argv)
 
@@ -47,17 +62,26 @@ args = parser.parse_args(remaining_argv)
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+if args.revision_result == "passed":
+    revision_result = True
+else:
+    revision_result = False
+
+if args.build_result == "passed":
+    build_result = True
+else:
+    build_result = False
 
 kernel_version=args.version
 def get_r_id():
-    return subprocess.run(["./kcidb/get_patch_hash.sh"], stdout=subprocess.PIPE, text=True)
+    return subprocess.run(["./kcidb/get_patch_hash.sh"], stdout=subprocess.PIPE)
 
-patchset_hash=str(get_r_id().stdout).strip("\n")
+patchset_hash=str(get_r_id().stdout.decode("utf-8")).strip("\n")
 
 def get_kernel_hash(kernel_version):
-    return subprocess.run(["./kcidb/get_kernel_hash.sh",kernel_version], stdout=subprocess.PIPE, text=True)
+    return subprocess.run(["./kcidb/get_kernel_hash.sh",kernel_version], stdout=subprocess.PIPE)
 
-base_kernel_hash=str(get_kernel_hash(kernel_version).stdout).strip("\n")
+base_kernel_hash=str(get_kernel_hash(kernel_version).stdout.decode("utf-8")).strip("\n")
 
 r_id = str(base_kernel_hash) + "+" + str(patchset_hash)
 print(r_id)
@@ -78,20 +102,20 @@ data = dict(
                 "Alice Ferrazzi <alicef@gentoo.org>"
             ],
             patch_mboxes=get_patches_list(),
-            log_url="https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16852/raw",
-            valid=args.result,
+            log_url="http://140.211.166.171:8010/api/v2/logs/" + args.patchlognumber + "/raw",
+            valid=revision_result,
         ),
     ],
     builds=[
         dict(
-            id="gkernelci:50-6",
+            id="gkernelci:"+args.bname+"_"+args.bnumber,
             origin="gkernelci",
             revision_id=r_id,
             architecture=args.arch,
-            log_url="https://kernel-ci.emjay-embedded.co.uk/api/v2/logs/16853/raw",
-            valid=args.result,
+            log_url="http://140.211.166.171:8010//api/v2/logs/" + args.buildlognumber + "/raw",
+            valid=build_result,
             misc=dict(
-                url="https://kernel-ci.emjay-embedded.co.uk/#/builders/50/builds/5",
+                url="http://140.211.166.171:8010/builders/" + args.buildernumber + "/builds/" + args.buildnumber,
             ),
         ),
     ]
@@ -99,3 +123,9 @@ data = dict(
 
 with open("data_file.json", "w") as write_file:
     json.dump(data, write_file)
+
+
+def kcidb_send():
+    return subprocess.run(["./kcidb/send.sh",kernel_version], stdout=subprocess.PIPE)
+
+print(kcidb_send().stdout.decode("utf-8"))
