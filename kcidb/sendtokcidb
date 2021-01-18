@@ -1,0 +1,12 @@
+#!/bin/bash
+
+VERSION=$1
+BUILDERNAME=$2
+BUILDNUMBER=$3
+RESULTS=$4
+ARCH=$5
+
+
+python3 kcidb/create_object.py --version "${VERSION}" --revision_result "${RESULTS}" --build_result "${RESULTS}" \
+  --arch "${ARCH}" --bname ${BUILDERNAME} --bnumber "${BUILDNUMBER}" \
+  --patchlognumber 1245 --buildlognumber 1222 --buildernumber 9 --buildnumber 5
