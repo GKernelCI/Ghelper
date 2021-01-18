@@ -101,8 +101,8 @@ data = dict(
                 "Mike Pagano <mpagano@gentoo.org>",
                 "Alice Ferrazzi <alicef@gentoo.org>"
             ],
-            patch_mboxes=get_patches_list(),
-            log_url="http://140.211.166.171:8010/api/v2/logs/" + args.patchlognumber + "/raw",
+            patch_mboxes=get_patches_list(kernel_version),
+#            log_url="http://140.211.166.171:8010/api/v2/logs/" + args.patchlognumber + "/raw",
             valid=revision_result,
         ),
     ],
@@ -112,11 +112,11 @@ data = dict(
             origin="gkernelci",
             revision_id=r_id,
             architecture=args.arch,
-            log_url="http://140.211.166.171:8010//api/v2/logs/" + args.buildlognumber + "/raw",
+#            log_url="http://140.211.166.171:8010//api/v2/logs/" + args.buildlognumber + "/raw",
             valid=build_result,
-            misc=dict(
-                url="http://140.211.166.171:8010/builders/" + args.buildernumber + "/builds/" + args.buildnumber,
-            ),
+#            misc=dict(
+#                url="http://140.211.166.171:8010/builders/" + args.buildernumber + "/builds/" + args.buildnumber,
+#            ),
         ),
     ]
 )
