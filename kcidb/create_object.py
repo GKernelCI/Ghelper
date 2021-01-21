@@ -56,6 +56,8 @@ parser.add_argument("-buildernumber", "--buildernumber", help="Builder name",
                     required=True)
 parser.add_argument("-buildnumber", "--buildnumber", help="Builder number",
                     required=True)
+parser.add_argument("-revdate", "--revdate", help="Builder number",
+                    required=True)
 args = parser.parse_args(remaining_argv)
 
 
@@ -95,6 +97,7 @@ data = dict(
         dict(
             id=r_id,
             origin="gkernelci",
+            discovery_time=args.revdate,
             git_repository_url="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
             git_repository_branch=kernel_version,
             contacts=[
@@ -110,6 +113,7 @@ data = dict(
         dict(
             id="gkernelci:"+args.bname+"_"+args.bnumber,
             origin="gkernelci",
+            start_time=args.revdate,
             revision_id=r_id,
             architecture=args.arch,
 #            log_url="http://140.211.166.171:8010//api/v2/logs/" + args.buildlognumber + "/raw",

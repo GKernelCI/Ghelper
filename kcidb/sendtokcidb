@@ -3,10 +3,12 @@
 VERSION=$1
 BUILDERNAME=$2
 BUILDNUMBER=$3
-RESULTS=$4
+REVRESULTS=$4
 ARCH=$5
+BUILDRESULTS=$6
+REVDATE=$7
 
 
-python3 kcidb/create_object.py --version "${VERSION}" --revision_result "${RESULTS}" --build_result "${RESULTS}" \
-  --arch "${ARCH}" --bname ${BUILDERNAME} --bnumber "${BUILDNUMBER}" \
-  --patchlognumber 1245 --buildlognumber 1222 --buildernumber 9 --buildnumber 5
+python3 kcidb/create_object.py --version "${VERSION}" --revision_result "${REVRESULTS}" --build_result "${BUILDRESULTS}" \
+  --arch "${ARCH}" --bname "${BUILDERNAME}" --bnumber "${BUILDNUMBER}" \
+  --patchlognumber 1245 --buildlognumber 1222 --buildernumber 9 --buildnumber 5 --revdate "${REVDATE}"
