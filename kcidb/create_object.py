@@ -97,9 +97,10 @@ data = dict(
         dict(
             id=r_id,
             origin="gkernelci",
-            discovery_time=args.revdate,
+            discovery_time=args.revdate.replace(',','.'),
             git_repository_url="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
             git_repository_branch=kernel_version,
+            git_commit_hash=base_kernel_hash,
             contacts=[
                 "Mike Pagano <mpagano@gentoo.org>",
                 "Alice Ferrazzi <alicef@gentoo.org>"
@@ -113,7 +114,7 @@ data = dict(
         dict(
             id="gkernelci:"+args.bname+"_"+args.bnumber,
             origin="gkernelci",
-            start_time=args.revdate,
+            start_time=args.revdate.replace(',','.'),
             revision_id=r_id,
             architecture=args.arch,
 #            log_url="http://140.211.166.171:8010//api/v2/logs/" + args.buildlognumber + "/raw",
