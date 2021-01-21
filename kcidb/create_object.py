@@ -64,12 +64,12 @@ args = parser.parse_args(remaining_argv)
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-if args.revision_result == "passed":
+if args.revision_result == "success":
     revision_result = True
 else:
     revision_result = False
 
-if args.build_result == "passed":
+if args.build_result == "success":
     build_result = True
 else:
     build_result = False
