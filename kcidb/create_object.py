@@ -99,7 +99,7 @@ data = dict(
             origin="gkernelci",
             discovery_time=args.revdate.replace(',','.'),
             git_repository_url="git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git",
-            git_repository_branch=kernel_version,
+            git_repository_branch='master',
             git_commit_hash=base_kernel_hash,
             contacts=[
                 "Mike Pagano <mpagano@gentoo.org>",
