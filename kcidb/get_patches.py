@@ -8,7 +8,8 @@ def get_patches_list(kernel_major_version):
     patches_list=[]
     path = '../linux-patches/*.patch'
     files = glob.glob(path)
-    for filename in files:
+    sorted_files=sorted(files)
+    for filename in sorted_files:
         patchbasename=(ntpath.basename(filename))
         print(patchbasename)
         patch_name=patchbasename
