@@ -9,4 +9,4 @@ if [[ $? != 0 ]]; then
 fi
 echo "validation passed"
 echo "submitting data_file.json"
-kcidb-submit -p kernelci-production -t playground_kernelci_new < data_file.json
+kcidb-submit -p kernelci-production -t kernelci_new < data_file.json
