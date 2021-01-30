@@ -75,6 +75,6 @@ configure_lava_boot() {
 
 configure_lava_boot
 job_id=$(start_job_get_job_id)
+display_lava_url
 check_job_state
 check_tasks
-display_lava_url
