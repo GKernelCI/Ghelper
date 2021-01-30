@@ -51,9 +51,9 @@ actions:
     images:
       stage3:
         image_arg: '-drive format=raw,file={gentoo} -append "root=/dev/sda console=ttyS0"'
-        url: http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/20210110T214504Z/stage3-amd64-20210110T214504Z.tar.xz
+        url: http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/20210127T214504Z/stage3-amd64-20210127T214504Z.tar.xz
         compression: xz
-        sha512sum: e2d0e76e195304f8b580bc27d37908e6a029861af875096b484e2ffd72f5e16240947dceb70806f83af1171b850fc6cb98ba903bd035799f04d1fb0ea13d5a63
+        sha512sum: d9dad6a92b9261f48e7d69d619a74525a26299b69e66a0e8a4f67164311732f2514dd5856d9863382e660f261f6903fd7f353dd5030cea89acf4f17b23717c6c
 
 - deploy:
     timeout:
