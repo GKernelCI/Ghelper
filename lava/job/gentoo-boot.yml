@@ -18,7 +18,7 @@ context:
     machine: pc
     memory: 2048
     console_device: ttyS0
-    netdevice: tap
+    netdevice: user
     model: model=e1000
     extra_options: ['-object cryptodev-backend-builtin,id=cryptodev0', '-device virtio-crypto-pci,id=crypto0,cryptodev=cryptodev0', '-vga virtio', "-append 'console=ttyS0 root=/dev/ram0 ip=dhcp'"]
 

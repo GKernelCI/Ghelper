@@ -50,7 +50,7 @@ check_tasks() {
     exit 1
   else
     echo "Lava tasks runned succesfully"
-    echo "$get_job_results"
+    echo "$(get_job_results)"
   fi
 }
 
@@ -67,6 +67,11 @@ configure_lava_boot() {
   rootfs_fullurl=http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/"$rootfs_url"
   sed -e "s@KERNEL_IMAGE_URL@${KERNEL_STORAGE_URL}@g" -e "s@ROOTFS_HASH@${rootfs_digest}@g" \
   -e "s@ROOTFS_URL@${rootfs_fullurl}@g" "${SCRIPT_DIR}"/lava/job/gentoo-boot.yml > "$tmpyml"
+  add_kselftest
+}
+
+add_kselftest(){
+  cat "${SCRIPT_DIR}"/lava/job/gentoo-kselftest.yml >> "$tmpyml"
 }
 
 configure_lava_boot
