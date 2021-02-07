@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
-currentdate=$(date --iso-8601=ns)
+currentdate=$(date +%Y%m%d_%H%M%S)
 FILESERVER=/var/www/fileserver/
 
 for kernel_sources in "$@"; do 
