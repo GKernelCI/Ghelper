@@ -33,7 +33,7 @@ case "$ARCH" in
 		;;
 esac
 
-FDIR="$(dirname $(realpath $0))/linux-$1-build/$BUILD_NAME/$BUILD_NUMBER/defconfig/"
+FDIR="$(dirname $(realpath $0))/linux-$1-build"
 
 echo "DEBUG: output is in $FDIR"
 

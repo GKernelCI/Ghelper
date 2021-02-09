@@ -5,7 +5,7 @@ BUILDER_NAME=$2
 BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 
-FDIR="linux-$ARCH-build/$BUILD_NAME/$BUILD_NUMBER/defconfig"
+FDIR="linux-$ARCH-build"
 
 IMAGE_PATH="$FDIR/arch/x86/boot/bzImage"
 COPY_IMAGE_PATH="${FILESERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/
