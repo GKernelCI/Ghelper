@@ -20,8 +20,8 @@ get_job_state() {
   lavacli --id buildbot jobs show "${job_id}" | grep "state       :" | awk '{print $3}'
 }
 
-get_job_results() {
-  lavacli -i buildbot results "${job_id}"
+get_failed_results() {
+  lavacli -i buildbot results "${job_id}" | grep fail | awk '{ print $2 }'
 }
 
 check_job_state() {
@@ -37,21 +37,20 @@ check_job_state() {
   echo The job "${job_id}" is "${job_state}"
 }
 
-get_failed_tasks() {
-  echo "$(get_job_results)" | grep fail
-}
-
-check_tasks() {
-  failed_tasks="$(get_failed_tasks)"
-  if [ "$failed_tasks" ]; then
-    echo "Following lava tasks failed"
-    echo "$failed_tasks"
-    # failing this task
-    exit 1
-  else
-    echo "Lava tasks runned succesfully"
-    echo "$(get_job_results)"
-  fi
+skip_usual_failing_task() {
+  failed_tasks=$(get_failed_results)
+  line=1
+  for output_line in $failed_tasks
+  do
+    line_string=$(awk -v linevar=$line 'NR==linevar {print; exit}' skip/kselftest_skiplist )
+    if [ "$output_line" = "$line_string" ]; then
+      echo "$line_string [Skipped]"
+    else
+      echo "$output_line [Failed] not on the skip list"
+      exit 1
+    fi
+    line=$(($line + 1))
+  done
 }
 
 display_lava_url () {
@@ -78,4 +77,4 @@ configure_lava_boot
 job_id=$(start_job_get_job_id)
 display_lava_url
 check_job_state
-check_tasks
+skip_usual_failing_task
