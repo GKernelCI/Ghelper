@@ -33,13 +33,8 @@ case "$ARCH" in
 		;;
 esac
 
-FDIR="$(dirname $(realpath $0))/linux-$1-build"
-
-echo "DEBUG: output is in $FDIR"
-
-MAKEOPTS="$MAKEOPTS O=$FDIR"
+MAKEOPTS="$MAKEOPTS O=$(dirname $(realpath $0))/linux-$1-build"
 
 shift
 
 make $MAKEOPTS $*
-
