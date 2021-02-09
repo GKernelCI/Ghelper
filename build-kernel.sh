@@ -5,23 +5,11 @@ set -e
 MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
 
 if [ $# -lt 1 ]; then
-	echo "Usage: $(basename $0) arch BUILD_NAME BUILD_NUMBER SOURCEDIR"
+	echo "Usage: $(basename $0) arch"
 	exit 1
 fi
 
-# arch must be a gentoo arch keyword
-ARCH=$1
-BUILD_NAME=$2
-BUILD_NUMBER=$3
-SOURCEDIR=$4
-
-# permit to override default
-if [ -e config.ini ];then
-	echo "INFO: Loading default from config.ini"
-	. ./config.ini
-fi
-
-case "$ARCH" in
+case "$1" in
 	"amd64")
 		;;
 	"arm")
