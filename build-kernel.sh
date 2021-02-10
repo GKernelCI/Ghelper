@@ -31,6 +31,13 @@ build() {
 
 	case $ACTION in
 	build)
+		echo "DO: mrproper"
+		make $MAKEOPTS mrproper
+
+		echo "DO: generate config from defconfig"
+		make $MAKEOPTS defconfig
+
+		echo "DO: build"
 		make $MAKEOPTS
 	;;
 	modules)
