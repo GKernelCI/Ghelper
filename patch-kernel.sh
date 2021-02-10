@@ -56,32 +56,3 @@ for i in ../linux-patches/*.patch; do
 	echo "${i}"
 	yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d linux-*/ < "${i}";
 done
-kernel_builddir="$(dirname $(realpath $0))/linux-${kernel_arch}-build"
-cd linux-*/ || exit 1
-test -d $kernel_builddir | mkdir $kernel_builddir
-if [ ! -z "${kernel_version}" ]; then
-	version="${kernel_version}-${kernel_arch}"
-	if [ -f ~/kernel-config/config-${version}_defconfig ]; then
-		defconfig=$(cat ~/kernel-config/config-${version}_defconfig)
-		echo "Using defconfig ${defconfig}"
-		make ARCH=${kernel_arch_target} O=${kernel_builddir} ${defconfig}
-	elif [ ! -f ~/kernel-config/config-"${version}" ]; then
-		echo "Kernel config-${version} not found!"
-		#echo "Trying configuration in /proc/config.gz.."
-		if [ ! -f ~/kernel-config ] && [ -r /proc/config.gz ]; then
-			echo "Using /proc/config.gz"
-			zcat /proc/config.gz > .config
-		else
-			echo "Using defconfig"
-			make ARCH=${kernel_arch_target} O=${kernel_builddir} defconfig
-		fi
-		make mrproper
-		yes "" | make ARCH=${kernel_arch_target} O=${kernel_builddir} defconfig
-	else
-		echo "Using ~/kernel-config/config-${version}"
-		make mrproper
-		cp ~/kernel-config/config-"${version}" .config
-		yes "" | make ARCH=${kernel_arch_target} O=${kernel_builddir} oldconfig
-	fi
-fi
-head Makefile
