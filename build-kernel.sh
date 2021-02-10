@@ -24,9 +24,11 @@ if [ -z "$ACTION" ];then
 fi
 
 build() {
+	local defconfig="$1"
+
 	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/"
 
-	echo "DEBUG: $ACTION for $ARCH to $FDIR"
+	echo "DEBUG: $ACTION for $ARCH/$defconfig to $FDIR"
 	MAKEOPTS="$MAKEOPTS O=$FDIR"
 
 	case $ACTION in
@@ -35,7 +37,7 @@ build() {
 		make $MAKEOPTS mrproper
 
 		echo "DO: generate config from defconfig"
-		make $MAKEOPTS defconfig
+		make $MAKEOPTS $defconfig
 
 		echo "DO: build"
 		make $MAKEOPTS
@@ -56,4 +58,15 @@ if [ ! -e "$BCONFIG/$ARCH" ];then
 	exit 1
 fi
 
-build
+for defconfigdir in $(ls $BCONFIG/$ARCH)
+do
+	echo "INFO: $ARCH $defconfigdir"
+	BCDIR=$BCONFIG/$ARCH/$defconfigdir
+	if [ -e $BCDIR/defconfig ];then
+		defconfig="$(cat $BCDIR/defconfig)"
+	else
+		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
+		defconfig="defconfig"
+	fi
+	build $defconfig
+done
