@@ -9,19 +9,21 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-case "$1" in
+ARCH=$1
+
+case "$ARCH" in
 	"amd64")
 		;;
 	"arm")
 		MAKEOPTS="ARCH=arm CROSS_COMPILE=armv7a-hardfloat-linux-gnueabi- $MAKEOPTS"
 		;;
 	*)
-		echo "Unsupported arch: $1"
+		echo "Unsupported arch: $ARCH"
 		exit 1
 		;;
 esac
 
-FDIR="$(dirname $(realpath $0))/linux-$1-build/"
+FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/"
 
 echo "DEBUG: output is in $FDIR"
 
