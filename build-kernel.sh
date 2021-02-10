@@ -50,4 +50,10 @@ build() {
 	esac
 }
 
+BCONFIG="$(dirname $(realpath $0))/build-config/"
+if [ ! -e "$BCONFIG/$ARCH" ];then
+	echo "ERROR: $ARCH is unsupported"
+	exit 1
+fi
+
 build
