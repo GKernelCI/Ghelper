@@ -29,6 +29,11 @@ echo "DEBUG: output is in $FDIR"
 
 MAKEOPTS="$MAKEOPTS O=$FDIR"
 
-shift
-
-make $MAKEOPTS $*
+case $2 in
+*)
+make $MAKEOPTS
+;;
+modules)
+make $MAKEOPTS modules
+;;
+esac
