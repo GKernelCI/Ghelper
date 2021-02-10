@@ -14,17 +14,20 @@ BUILD_NAME=$2
 BUILD_NUMBER=$3
 SOURCEDIR=$4
 
-FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/"
+build() {
+	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/"
 
-echo "DEBUG: output is in $FDIR"
+	echo "DEBUG: output is in $FDIR"
+	MAKEOPTS="$MAKEOPTS O=$FDIR"
 
-MAKEOPTS="$MAKEOPTS O=$FDIR"
+	case $BUILD_NAME in
+	*)
+		make $MAKEOPTS
+	;;
+	modules)
+		make $MAKEOPTS modules
+	;;
+	esac
+}
 
-case $BUILD_NAME in
-*)
-make $MAKEOPTS
-;;
-modules)
-make $MAKEOPTS modules
-;;
-esac
+build
