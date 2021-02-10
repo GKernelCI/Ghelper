@@ -11,18 +11,6 @@ fi
 
 ARCH=$1
 
-case "$ARCH" in
-	"amd64")
-		;;
-	"arm")
-		MAKEOPTS="ARCH=arm CROSS_COMPILE=armv7a-hardfloat-linux-gnueabi- $MAKEOPTS"
-		;;
-	*)
-		echo "Unsupported arch: $ARCH"
-		exit 1
-		;;
-esac
-
 FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/"
 
 echo "DEBUG: output is in $FDIR"
