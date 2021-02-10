@@ -10,7 +10,7 @@ if [ $# -lt 1 ]; then
 fi
 
 ARCH=$1
-BUILD_NAME=$2
+BUILD_NAME=$(echo $2 | sed 's,:,_,g')
 BUILD_NUMBER=$3
 SOURCEDIR=$4
 ACTION=$5

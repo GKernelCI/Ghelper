@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ARCH=$1
-BUILDER_NAME=$2
+BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
 BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 
