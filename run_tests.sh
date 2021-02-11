@@ -1,6 +1,7 @@
 #!/bin/bash
 
 ARCH=$1
+# make cannot handle ":" in a path, so we need to replace it
 BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
 BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
