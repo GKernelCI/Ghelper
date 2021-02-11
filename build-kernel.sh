@@ -5,12 +5,13 @@ set -e
 MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
 
 if [ $# -lt 1 ]; then
-	echo "Usage: $(basename $0) arch BUILD_NAME BUILD_NUMBER SOURCEDIR [build|modules]"
+	echo "Usage: $(basename $0) arch BUILDER_NAME BUILD_NUMBER SOURCEDIR [build|modules]"
 	exit 1
 fi
 
 ARCH=$1
-BUILD_NAME=$(echo $2 | sed 's,:,_,g')
+# make cannot handle ":" in a path, so we need to replace it
+BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
 BUILD_NUMBER=$3
 SOURCEDIR=$4
 ACTION=$5
