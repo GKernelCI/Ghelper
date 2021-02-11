@@ -26,8 +26,9 @@ fi
 
 build() {
 	local defconfig="$1"
+	local toolchain="$2"
 
-	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/"
+	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
 	echo "DEBUG: $ACTION for $ARCH/$defconfig to $FDIR"
 	MAKEOPTS="$MAKEOPTS O=$FDIR"
@@ -69,5 +70,5 @@ do
 		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
 		defconfig="defconfig"
 	fi
-	build $defconfig
+	build $defconfig gcc
 done
