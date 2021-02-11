@@ -11,6 +11,7 @@ copy_artifact() {
 
 	IMAGE_PATH="$FDIR/arch/x86/boot/bzImage"
 	COPY_IMAGE_PATH="${FILESERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/
+	echo "DEBUG: copy artifacts from $FDIR to $COPY_IMAGE_PATH"
 	mkdir -p "${COPY_IMAGE_PATH}"
 	chmod -R 755 "${COPY_IMAGE_PATH}"
 
@@ -18,4 +19,21 @@ copy_artifact() {
 	chmod 755 "${COPY_IMAGE_PATH}"/*
 }
 
-copy_artifact
+BCONFIG="$(dirname $(realpath $0))/build-config/"
+if [ ! -e "$BCONFIG/$ARCH" ];then
+	echo "ERROR: $ARCH is unsupported"
+	exit 1
+fi
+
+for defconfigdir in $(ls $BCONFIG/$ARCH)
+do
+	echo "INFO: $ARCH $defconfigdir"
+	BCDIR=$BCONFIG/$ARCH/$defconfigdir
+	if [ -e $BCDIR/defconfig ];then
+		defconfig="$(cat $BCDIR/defconfig)"
+	else
+		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
+		defconfig="defconfig"
+	fi
+	copy_artifact $defconfig
+done
