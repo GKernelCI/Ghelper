@@ -7,7 +7,10 @@ BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 
 copy_artifact() {
-	FDIR="linux-$ARCH-build/"
+	local defconfig="$1"
+	local toolchain="$2"
+
+	FDIR="linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
 	IMAGE_PATH="$FDIR/arch/x86/boot/bzImage"
 	COPY_IMAGE_PATH="${FILESERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/
@@ -35,5 +38,5 @@ do
 		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
 		defconfig="defconfig"
 	fi
-	copy_artifact $defconfig
+	copy_artifact $defconfig gcc
 done
