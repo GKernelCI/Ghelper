@@ -45,7 +45,24 @@ build() {
 		make $MAKEOPTS
 	;;
 	modules)
+		rm -f $FDIR/nomodule
+		grep -q 'CONFIG_MODULES=y' $FDIR/.config || touch $FDIR/nomodule
+		if [ -e $FDIR/nomodule ];then
+			echo "INFO: modules are disabled, skipping"
+			return 0
+		fi
+		echo "DO: build modules"
 		make $MAKEOPTS modules
+		echo "DO: install modules"
+		mkdir $FDIR/modules
+		make $MAKEOPTS modules_install INSTALL_MOD_PATH="$FDIR/modules/"
+		CPWD=($pwd)
+		cd $FDIR/modules
+		echo "DO: targz modules"
+		tar czf ../modules.tar.gz lib
+		cd $CPWD
+		rm -r "$FDIR/modules/"
+
 	;;
 	*)
 		echo "ERROR: unknow action: $ACTION"
