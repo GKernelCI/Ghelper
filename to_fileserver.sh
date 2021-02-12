@@ -20,6 +20,15 @@ copy_artifact() {
 
 	cp -rf "${IMAGE_PATH}" "${COPY_IMAGE_PATH}"
 	chmod 755 "${COPY_IMAGE_PATH}"/*
+
+	echo "COPY: config"
+	cp "$FDIR/.config" "${COPY_IMAGE_PATH}/config"
+	if [ -e "$FDIR/nomodule" ];then
+		echo "No modules to copy"
+	else
+		echo "COPY modules.tar.gz"
+		cp -v $FDIR/modules.tar.gz "${COPY_IMAGE_PATH}/"
+	fi
 }
 
 BCONFIG="$(dirname $(realpath $0))/build-config/"
