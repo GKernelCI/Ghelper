@@ -47,7 +47,7 @@ echo "CHECK $SCANDIR"
 for defconfig in $(ls $SCANDIR)
 do
 	echo "CHECK: $defconfig"
-	for toolchain in gcc
+	for toolchain in $(ls $SCANDIR/$defconfig)
 	do
 		echo "CHECK: toolchain $toolchain"
 		echo "BOOT: $SCANDIR/$defconfig/$toolchain"

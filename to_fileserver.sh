@@ -47,5 +47,8 @@ do
 		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
 		defconfig="defconfig"
 	fi
-	copy_artifact $defconfig gcc
+	for toolchain in $(ls $BCDIR/toolchain)
+	do
+		copy_artifact $defconfig $toolchain
+	done
 done
