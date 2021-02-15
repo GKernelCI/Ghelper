@@ -59,7 +59,7 @@ display_lava_url () {
 }
 
 configure_lava_boot() {
-  KERNEL_STORAGE_URL=http://"${STORAGE_SERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/defconfig/gcc/bzImage"
+  KERNEL_STORAGE_URL=http://"${STORAGE_SERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/$defconfig/$toolchain/bzImage"
   latest_stage3_amd64=$(curl -s http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/latest-stage3-amd64.txt)
   rootfs_url=$(echo "$latest_stage3_amd64" | awk 'NR==3{ print $1 }')
   rootfs_digests_file=$(curl -s http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/"$rootfs_url".DIGESTS)
@@ -74,8 +74,28 @@ add_kselftest(){
   cat "${SCRIPT_DIR}"/lava/job/gentoo-kselftest.yml >> "$tmpyml"
 }
 
-configure_lava_boot
-job_id=$(start_job_get_job_id)
-display_lava_url
-check_job_state
-skip_usual_failing_task
+SCANDIR="$FILESERVER/$BUILDER_NAME/$ARCH/$BUILD_NUMBER/"
+if [ ! -e "$SCANDIR" ];then
+	echo "ERROR: $SCANDIR does not exists"
+	exit 1
+fi
+
+echo "CHECK $SCANDIR"
+for defconfig in $(ls $SCANDIR)
+do
+	echo "CHECK: $defconfig"
+	for toolchain in gcc
+	do
+		echo "CHECK: toolchain $toolchain"
+		configure_lava_boot
+		job_id=$(start_job_get_job_id)
+		display_lava_url
+		check_job_state
+		skip_usual_failing_task
+		echo "BOOT: $SCANDIR/$defconfig/$toolchain"
+		if [ $? -ne 0 ];then
+			echo "ERROR: there is some fail"
+			exit 1
+		fi
+	done
+done
