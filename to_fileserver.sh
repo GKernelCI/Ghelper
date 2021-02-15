@@ -13,7 +13,7 @@ copy_artifact() {
 	FDIR="linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
 	IMAGE_PATH="$FDIR/arch/x86/boot/bzImage"
-	COPY_IMAGE_PATH="${FILESERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/
+	COPY_IMAGE_PATH="${FILESERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/$defconfig/$toolchain/"
 	echo "DEBUG: copy artifacts from $FDIR to $COPY_IMAGE_PATH"
 	mkdir -p "${COPY_IMAGE_PATH}"
 	chmod -R 755 "${COPY_IMAGE_PATH}"
