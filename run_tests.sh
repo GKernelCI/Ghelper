@@ -59,7 +59,7 @@ display_lava_url () {
 }
 
 configure_lava_boot() {
-  KERNEL_STORAGE_URL=http://"${STORAGE_SERVER}"/"${BUILDER_NAME}"/"${BUILD_NUMBER}"/bzImage
+  KERNEL_STORAGE_URL=http://"${STORAGE_SERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/defconfig/gcc/bzImage"
   latest_stage3_amd64=$(curl -s http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/latest-stage3-amd64.txt)
   rootfs_url=$(echo "$latest_stage3_amd64" | awk 'NR==3{ print $1 }')
   rootfs_digests_file=$(curl -s http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/"$rootfs_url".DIGESTS)
