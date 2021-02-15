@@ -1,0 +1,19 @@
+templates:
+  - name: qemu x86_64
+    arch: x86_64
+    devicetype: qemu
+    devicename: qemu-x86_64
+    kernelfile: bzImage
+    mach: x86_64
+    qemu:
+        machine: pc
+        memory: 2048
+        guestfs_interface: ide
+        cpu: qemu64
+        netdevice: tap
+        model: model=e1000
+        netdevice: tap
+        console_device: ttyS0
+        append: "console=ttyS0 root=/dev/ram0"
+        extra_options:
+        - '-vga virtio'
