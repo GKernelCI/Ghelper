@@ -28,6 +28,28 @@ build() {
 	local defconfig="$1"
 	local toolchain="$2"
 
+	TCONFIG=$(dirname $(realpath $0))/toolchains
+	HOST_ARCH=$(uname -m)
+	if [ ! -e "$TCONFIG/$HOST_ARCH" ];then
+		echo "ERROR: build not handled for host arch $HOST_ARCH"
+		return 0
+	fi
+	if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH" ];then
+		echo "ERROR: no toolchain for $ARCH"
+		return 0
+	fi
+	if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH/$toolchain" ];then
+		echo "ERROR: no toolchain $toolchain for $ARCH"
+		return 0
+	fi
+
+	TOOLCHAIN_DIR="$TCONFIG/$HOST_ARCH/$ARCH/$toolchain"
+	echo "DEBUG: found toolchain $toolchain in $TOOLCHAIN_DIR"
+	if [ -e "$TOOLCHAIN_DIR/opts" ];then
+		TC_OPTS="$(cat $TOOLCHAIN_DIR/opts)"
+		MAKEOPTS="$TC_OPTS $MAKEOPTS"
+	fi
+
 	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
 	echo "DEBUG: $ACTION for $ARCH/$defconfig to $FDIR"
@@ -87,5 +109,8 @@ do
 		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
 		defconfig="defconfig"
 	fi
-	build $defconfig gcc
+	for toolchain in $(ls $BCDIR/toolchain)
+	do
+		build $defconfig $toolchain
+	done
 done
