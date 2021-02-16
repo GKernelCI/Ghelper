@@ -9,15 +9,23 @@ FILESERVER=/var/www/fileserver/
 copy_artifact() {
 	local defconfig="$1"
 	local toolchain="$2"
+	local b_dir="$3"
 
 	FDIR="linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
-	IMAGE_PATH="$FDIR/arch/x86/boot/bzImage"
 	COPY_IMAGE_PATH="${FILESERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/$defconfig/$toolchain/"
 	echo "DEBUG: copy artifacts from $FDIR to $COPY_IMAGE_PATH"
-	mkdir -p "${COPY_IMAGE_PATH}"
 
-	cp -rf "${IMAGE_PATH}" "${COPY_IMAGE_PATH}"
+	mkdir -p "${COPY_IMAGE_PATH}"
+	for fartifact in $(ls $b_dir/artifacts)
+	do
+		echo "DEBUG: handle artifact $fartifact"
+		while read artifact
+		do
+			echo "INFO: copy $artifact from $FDIR to $COPY_IMAGE_PATH"
+			cp -a --dereference $FDIR/$artifact $COPY_IMAGE_PATH/
+		done < "$b_dir/artifacts/$fartifact"
+	done
 
 	echo "COPY: config"
 	cp "$FDIR/.config" "${COPY_IMAGE_PATH}/config"
@@ -48,6 +56,6 @@ do
 	fi
 	for toolchain in $(ls $BCDIR/toolchain)
 	do
-		copy_artifact $defconfig $toolchain
+		copy_artifact $defconfig $toolchain "$BCDIR"
 	done
 done
