@@ -49,6 +49,11 @@ build() {
 		TC_OPTS="$(cat $TOOLCHAIN_DIR/opts)"
 		MAKEOPTS="$TC_OPTS $MAKEOPTS"
 	fi
+	if [ -e "$TOOLCHAIN_DIR/version" ];then
+		echo "=== version of $toolchain ==="
+		$TOOLCHAIN_DIR/version
+		echo "============================="
+	fi
 
 	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
