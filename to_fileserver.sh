@@ -16,10 +16,8 @@ copy_artifact() {
 	COPY_IMAGE_PATH="${FILESERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/$defconfig/$toolchain/"
 	echo "DEBUG: copy artifacts from $FDIR to $COPY_IMAGE_PATH"
 	mkdir -p "${COPY_IMAGE_PATH}"
-	chmod -R 755 "${COPY_IMAGE_PATH}"
 
 	cp -rf "${IMAGE_PATH}" "${COPY_IMAGE_PATH}"
-	chmod 755 "${COPY_IMAGE_PATH}"/*
 
 	echo "COPY: config"
 	cp "$FDIR/.config" "${COPY_IMAGE_PATH}/config"
@@ -29,6 +27,7 @@ copy_artifact() {
 		echo "COPY modules.tar.gz"
 		cp -v $FDIR/modules.tar.gz "${COPY_IMAGE_PATH}/"
 	fi
+	chmod --recursive o+rX "${COPY_IMAGE_PATH}"
 }
 
 BCONFIG="$(dirname $(realpath $0))/build-config/"
