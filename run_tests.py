@@ -229,6 +229,35 @@ if ret != 0:
 if len(boots) == 0 and not args.noact:
     sys.exit(1)
 
+# return true if all tests are ok (or their fail acknowledged via skiplist)
+# return false if any tests failed (without being skiped)
+def check_tests(jobid, server):
+    result = True
+    testjob_results_raw = server.results.get_testjob_results_yaml(jobid)
+    testjob_results = yaml.unsafe_load(testjob_results_raw)
+    for test in testjob_results:
+        print("CHECK: SUITE: %s NAME: %s RESULT: %s" % (test["suite"], test["name"], test["result"]))
+        if test["result"] == 'fail':
+            skipfile = "skip/%s" % re.sub("^[0-9]*_", "", test["suite"])
+            try:
+                if args.debug:
+                    print("DEBUG: found %s" % skipfile)
+                fs = open(skipfile, 'r')
+                if re.search("(\n|^)%s(\n|$)" % test["name"], fs.read()):
+                    print("INFO: found in %s" % skipfile)
+                else:
+                    print("INFO: not found in %s" % skipfile)
+                    result = False
+                fs.close()
+            except IOError:
+                if args.debug:
+                    print("DEBUG: skiplist %s not found" % skipfile)
+                result = False
+        else:
+            if args.debug:
+                print("DEBUG test ok")
+    return result
+
 if len(boots) > 0 and args.waitforjobsend:
     all_jobs_ended = False
     all_jobs_success = True
@@ -253,6 +282,8 @@ if len(boots) > 0 and args.waitforjobsend:
                         boots[labname][jobid]["state"] = jobd["state"]
                         if jobd["health"] != 'Complete':
                             all_jobs_success = False
+                        else:
+                            all_jobs_success = check_tests(jobid, server)
                 except OSError as e:
                     print(e)
                 except TimeoutError as e:
