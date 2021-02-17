@@ -59,14 +59,12 @@ display_lava_url () {
 }
 
 configure_lava_boot() {
+  ./gentoo_get_stage_url.sh --arch amd64 > stage-env
+  . ./stage-env
+  rm ./stage-env
   KERNEL_STORAGE_URL=http://"${STORAGE_SERVER}/${BUILDER_NAME}/$ARCH/${BUILD_NUMBER}/$defconfig/$toolchain/bzImage"
-  latest_stage3_amd64=$(curl -s http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/latest-stage3-amd64.txt)
-  rootfs_url=$(echo "$latest_stage3_amd64" | awk 'NR==3{ print $1 }')
-  rootfs_digests_file=$(curl -s http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/"$rootfs_url".DIGESTS)
-  rootfs_digest=$(echo "$rootfs_digests_file" | awk 'NR==2{ print $1 }')
-  rootfs_fullurl=http://gentoo.mirrors.ovh.net/gentoo-distfiles/releases/amd64/autobuilds/"$rootfs_url"
-  sed -e "s@KERNEL_IMAGE_URL@${KERNEL_STORAGE_URL}@g" -e "s@ROOTFS_HASH@${rootfs_digest}@g" \
-  -e "s@ROOTFS_URL@${rootfs_fullurl}@g" "${SCRIPT_DIR}"/lava/job/gentoo-boot.yml > "$tmpyml"
+  sed -e "s@KERNEL_IMAGE_URL@${KERNEL_STORAGE_URL}@g" -e "s@ROOTFS_HASH@${ROOTFS_SHA512}@g" \
+  -e "s@ROOTFS_URL@${ROOTFS_URL}@g" "${SCRIPT_DIR}"/lava/job/gentoo-boot.yml > "$tmpyml"
   add_kselftest
 }
 
