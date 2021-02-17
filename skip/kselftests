@@ -1,0 +1,10 @@
+sigreturn_64
+run_x86_tests.sh
+sigreturn_32
+run_vmtests
+test_user_copy.sh
+test_bpf.sh
+ftracetest
+fw_userhelper.sh
+fw_filesystem.sh
+execveat
