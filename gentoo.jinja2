@@ -1,0 +1,135 @@
+{% set console_device = console_device|default('ttyS0') %}
+{%- if guestfs_interface == "virtio" %}
+{% set root_device = 'vda' %}
+{%- else %}
+{# ide scsi #}
+{% set root_device = root_device|default('sda') %}
+{%- endif %}
+
+device_type: {{ DEVICETYPE }}
+
+job_name: {{ JOBNAME }}
+timeouts:
+  job:
+    minutes: 300
+  action:
+   minutes: 20
+  actions:
+    power-off:
+      seconds: 30
+priority: high
+visibility: public
+
+context:
+    arch: {{ qemu_arch }}
+{%- if qemu_no_kvm is defined %}
+    no_kvm: {{ qemu_no_kvm }}
+{%- endif %}
+{%- if qemu_cpu is defined %}
+    cpu: {{ qemu_cpu }}
+{%- endif %}
+{%- if qemu_machine is defined %}
+    machine: {{ qemu_machine }}
+{%- endif %}
+{%- if qemu_memory is defined %}
+    memory: {{ qemu_memory }}
+{%- endif %}
+{%- if console_device is defined %}
+    console_device: {{ console_device }}
+{%- endif %}
+{%- if qemu_netdevice is defined %}
+    netdevice: {{ qemu_netdevice }}
+{%- endif %}
+{%- if qemu_model is defined %}
+    model: {{ qemu_model }}
+{%- endif %}
+{%- if guestfs_interface is defined %}
+    guestfs_interface: {{ guestfs_interface }}
+{%- endif %}
+{%- if guestfs_driveid is defined %}
+    guestfs_driveid: {{ guestfs_driveid }}
+{%- endif %}
+{%- if qemu_extra_options is defined %}
+    extra_options: {{ qemu_extra_options }}
+{%- endif %}
+
+actions:
+- deploy:
+    timeout:
+      minutes: 20
+    to: downloads
+    postprocess:
+      docker:
+        image: debian:buster
+        steps:
+         - ls -l
+         - mkdir gentoo
+         - apt-get update && apt-get -y install xz-utils
+         - cd gentoo && tar xpf ../stage3*
+         - echo 'hostname="gentooci"' > etc/conf.d/hostname
+         - echo "rc_nocolor=YES" >> etc/rc.conf
+         - touch etc/inittab
+         - sed -i 's,^s0,#s0,' etc/inittab
+         - sed -i 's,^f0,#f0,' etc/inittab
+         - echo "s0:12345:respawn:/sbin/agetty -L 115200 {{ console_device }} vt100" >> etc/inittab
+         - grep ^s etc/inittab
+         - sed -i 's,root:.*,root:$6$p3gorwcg$ly73iRHcUPeR4WI2pRWbJv5Gg9SOtPGIHsFN.PH7b94U.F9vebcLVFBMAvJMurxLsKt6i/ZnLmuPj7JfD0d5k/:16834:0:::::,' etc/shadow
+{%- if MODULES_SHA256 %}
+         - tar xf ../modules.tar -C /
+         - rm ../modules.tar
+         - chmod 755 /lib
+         - chown -R root:root /lib/modules
+         - ls -l /lib/modules
+{% endif %}
+{#- size must be a power of two for board which emulate sdcard #}
+         - du -ah --max-depth=1
+         - mke2fs -d . -m 0 -t ext2 ../gentoo.ext2 2G
+         - cd ..
+         - rm -rf gentoo
+         - rm stage3*
+         - ls -l
+    images:
+      stage3:
+        image_arg: '-drive format=raw,if={{ guestfs_interface }},file={gentoo} -append "root=/dev/{{ root_device }} console={{ console_device }}"'
+        url: {{ ROOT_FQDN }}{{ rootfs_path }}
+        compression: {{ ROOTFS_COMP }}
+{%- if rootfs_sha512 %}
+        sha512sum: {{ rootfs_sha512 }}
+{% endif %}
+{%- if MODULES_SHA256 %}
+      modules:
+        url: {{ BOOT_FQDN }}/{{ PATH }}/modules.tar.gz
+        compression: gz
+        sha256sum: {{ MODULES_SHA256 }}
+{% endif %}
+
+- deploy:
+    timeout:
+      minutes: 3
+    to: tmpfs
+    os: oe
+    images:
+      kernel:
+        image_arg: '-kernel {kernel}'
+        url: {{ BOOT_FQDN }}/{{ PATH }}/{{ KERNELFILE }}
+        type: {{ KERNELTYPE }}
+        sha256sum: {{ KERNEL_SHA256 }}
+      gentoo:
+        image_arg: '-drive format=raw,file={gentoo}'
+        url: downloads://gentoo.ext2
+
+- boot:
+    timeout:
+      minutes: 10
+    method: qemu
+    media: tmpfs
+    prompts:
+      - '/ #'
+      - '~ #'
+{%- if auto_login_password %}
+    auto_login:
+      login_prompt: "login:"
+      username: root
+      password_prompt: 'Password:'
+      password: {{ auto_login_password }}
+{% endif %}
