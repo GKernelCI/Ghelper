@@ -114,6 +114,12 @@ actions:
         url: {{ BOOT_FQDN }}/{{ PATH }}/{{ KERNELFILE }}
         type: {{ KERNELTYPE }}
         sha256sum: {{ KERNEL_SHA256 }}
+{%- if dtb_path is defined %}
+      dtb:
+        image_arg: '-dtb {dtb}'
+        url: {{ BOOT_FQDN }}{{ dtb_path }}
+        sha256sum: {{ DTB_SHA256 }}
+{% endif %}
       gentoo:
         image_arg: '-drive format=raw,file={gentoo}'
         url: downloads://gentoo.ext2
