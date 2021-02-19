@@ -1,4 +1,18 @@
 templates:
+  - name: qemu-arm64-virt
+    arch: arm64
+    devicetype: qemu
+    devicename: qemu-arm64-virt
+    kernelfile: Image
+    mach: qemu
+    qemu:
+        machine: virt
+        memory: 2048
+        cpu: cortex-a57
+        guestfs_interface: virtio
+        netdevice: user
+        console_device: ttyAMA0
+        append: "console=ttyAMA0 root=/dev/ram0"
   - name: qemu x86_64
     arch: x86_64
     devicetype: qemu

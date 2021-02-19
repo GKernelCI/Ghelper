@@ -25,6 +25,10 @@ def boot():
     kconfig = open("%s/config" % kdir)
     kconfigs = kconfig.read()
     kconfig.close()
+    if re.search("CONFIG_ARM64=", kconfigs):
+        arch = "arm64"
+        qarch = "aarch64"
+        larch = "arm64"
     if re.search("CONFIG_X86_64=", kconfigs):
         arch = "x86_64"
         qarch = "x86_64"
@@ -131,6 +135,14 @@ def boot():
             if not send_to_lab:
                 print("\tSKIP: not found")
                 continue
+            if "dtb" in device:
+                jobdict["DTB"] = device["dtb"]
+                dtbfile = "%s/%s" % (kdir, device["dtb"])
+                if not os.path.isfile(dtbfile):
+                    print("SKIP: no dtb at %s" % dtbfile)
+                    continue
+                with open(dtbfile, "rb") as fdtb:
+                    jobdict["DTB_SHA256"] = hashlib.sha256(fdtb.read()).hexdigest()
             if re.search("CONFIG_MODULES=y", kconfigs):
                 with open("%s/modules.tar.gz" % kdir, "rb") as fmodules:
                     jobdict["MODULES_SHA256"] = hashlib.sha256(fmodules.read()).hexdigest()
