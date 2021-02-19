@@ -58,10 +58,18 @@ build() {
 		echo "============================="
 	fi
 
+	LINUX_ARCH=$ARCH
+	# insert ARCH hack for name here
+	case $ARCH in
+	amd64)
+		LINUX_ARCH=x86_64
+	;;
+	esac
+
 	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
 	echo "DEBUG: $ACTION for $ARCH/$defconfig to $FDIR"
-	MAKEOPTS="$MAKEOPTS O=$FDIR"
+	MAKEOPTS="$MAKEOPTS ARCH=$LINUX_ARCH O=$FDIR"
 
 	case $ACTION in
 	build)
