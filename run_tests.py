@@ -159,7 +159,10 @@ def boot():
             jobt = template.render(jobdict)
             if not args.noact:
                 jobid = server.scheduler.jobs.submit(jobt)
-                print("Submited as %s" % jobid)
+                publicuri = re.sub("//.*@", "//", lab["lavauri"])
+                publicuri = re.sub("/RPC2", "", publicuri)
+                joburl = "%s/scheduler/job/%s" % (publicuri, jobid)
+                print("Submited as %s on %s %s" % (jobid, lab["name"], joburl))
                 if lab["name"] not in boots:
                     boots[lab["name"]] = {}
                 boots[lab["name"]][jobid] = {}
