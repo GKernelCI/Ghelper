@@ -231,10 +231,20 @@ if len(boots) == 0 and not args.noact:
 
 # return true if all tests are ok (or their fail acknowledged via skiplist)
 # return false if any tests failed (without being skiped)
-def check_tests(jobid, server):
+def check_tests(jobid, labname, server):
     result = True
     testjob_results_raw = server.results.get_testjob_results_yaml(jobid)
     testjob_results = yaml.unsafe_load(testjob_results_raw)
+    # save logs
+    logdir = "%s/logs" % kdir
+    if not os.path.isdir(logdir):
+        os.mkdir(logdir)
+    lablogdir = "%s/%s" % (logdir, labname)
+    if not os.path.isdir(lablogdir):
+        os.mkdir(lablogdir)
+    flog = open("%s/%s.testjob_results.raw" % (lablogdir, jobid), "w")
+    flog.write(testjob_results_raw)
+    flog.close()
     for test in testjob_results:
         print("CHECK: SUITE: %s NAME: %s RESULT: %s" % (test["suite"], test["name"], test["result"]))
         if test["result"] == 'fail':
@@ -283,7 +293,7 @@ if len(boots) > 0 and args.waitforjobsend:
                         if jobd["health"] != 'Complete':
                             all_jobs_success = False
                         else:
-                            all_jobs_success = check_tests(jobid, server)
+                            all_jobs_success = check_tests(jobid, labname, server)
                 except OSError as e:
                     print(e)
                 except TimeoutError as e:
