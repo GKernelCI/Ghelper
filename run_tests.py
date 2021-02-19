@@ -207,7 +207,6 @@ config_filename = os.path.expanduser(os.path.join(config_dir, "lavacli.yaml"))
 try:
     f_conf = open(config_filename, "r", encoding="utf-8")
     data = yaml.safe_load(f_conf.read())
-    print(data)
 except IOError:
     print("Fail to open %s" % config_filename)
     sys.exit(1)
