@@ -8,8 +8,8 @@ for kernel_sources in "$@"; do
   if [[ "${kernel_sources}" =~ .ebuild$ ]]; then
     if [[ "${kernel_sources}" =~ sources ]]; then
       gentoo_rootfs=$(docker run -d --name gentoo"${currentdate}" gentoo/stage3-amd64:latest tail -f /dev/null)
-      docker exec "${gentoo_rootfs}" wget https://github.com/gentoo/gentoo/archive/master.zip -O /master.zip
-      docker exec "${gentoo_rootfs}" unzip master.zip
+      docker exec "${gentoo_rootfs}" wget --quiet https://github.com/gentoo/gentoo/archive/master.zip -O /master.zip
+      docker exec "${gentoo_rootfs}" unzip -q master.zip
       libself_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/dev-libs/libelf/ -iname "*.ebuild" | sort -Vr | head -n 1)
       bc_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/sys-devel/bc -iname "*.ebuild" | sort -Vr | head -n 1)
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${libself_recent_ebuild}" clean merge
