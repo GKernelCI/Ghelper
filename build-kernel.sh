@@ -79,6 +79,18 @@ build() {
 		echo "DO: generate config from defconfig"
 		make $MAKEOPTS $defconfig
 
+		if [ -e "$BCDIR/config" ];then
+			cp $FDIR/.config $FDIR/.config.old
+			echo "DEBUG: config hacks"
+			for config in $(ls $BCDIR/config)
+			do
+				echo "DEBUG: add config $config"
+				cat $BCDIR/config/$config >> $FDIR/.config
+			done
+			make $MAKEOPTS olddefconfig >> $FDIR/build.log
+			diff -u $FDIR/.config.old $FDIR/.config || true
+		fi
+
 		echo "DO: build"
 		make $MAKEOPTS
 	;;
