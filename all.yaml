@@ -1,4 +1,20 @@
 templates:
+# Cannot use virt due to https://bugzilla.redhat.com/show_bug.cgi?id=1633328
+# a virt can be created and depend on ARM_LPAE
+  - name: qemu-arm-virt-2.11
+    arch: arm
+    devicetype: qemu
+    devicename: qemu-arm-virt-2.11
+    kernelfile: zImage
+    mach: qemu
+    qemu:
+        machine: virt-2.11
+        memory: 1024
+        cpu: cortex-a15
+        netdevice: user
+        guestfs_interface: virtio
+        console_device: ttyAMA0
+        append: "console=ttyAMA0 root=/dev/ram0"
   - name: qemu-arm64-virt
     arch: arm64
     devicetype: qemu

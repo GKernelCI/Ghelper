@@ -39,6 +39,9 @@ found_latest()
 	RFS_BPATH=/releases/$ARCH/autobuilds
 	BASEURL=$RFS_BASE$RFS_BPATH
 	case $ARCH in
+	arm)
+		SARCH=armv7a_hardfp
+	;;
 	x86)
 		SARCH=i686
 	;;
