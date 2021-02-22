@@ -42,6 +42,10 @@ found_latest()
 	arm)
 		SARCH=armv7a_hardfp
 	;;
+	sparc64)
+		RFS_BPATH=/releases/sparc/autobuilds
+		BASEURL=$RFS_BASE$RFS_BPATH
+	;;
 	x86)
 		SARCH=i686
 	;;
