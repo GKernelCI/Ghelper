@@ -29,6 +29,22 @@ templates:
         netdevice: user
         console_device: ttyAMA0
         append: "console=ttyAMA0 root=/dev/ram0"
+  - name: QEMU PPC64 pseries
+    arch: powerpc64
+    larch: powerpc
+    devicetype: qemu
+    devicename: qemu-ppc64-pseries
+    kernelfile: vmlinux
+    mach: powerpc64
+    qemu:
+        machine: pseries
+        cpu: POWER8
+        model: model=e1000
+        netdevice: user
+        guestfs_interface: scsi
+        console_device: hvc0
+        append: "console=hvc0 root=/dev/ram0"
+        no_kvm: True
   - name: QEMU sun4u
     arch: sparc64
     larch: sparc

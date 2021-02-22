@@ -16,6 +16,9 @@ do
 		x86_64)
 			ARCH=amd64
 		;;
+		powerpc64)
+			ARCH=ppc64
+		;;
 		esac
 		SARCH=$ARCH
 		shift
@@ -41,6 +44,10 @@ found_latest()
 	case $ARCH in
 	arm)
 		SARCH=armv7a_hardfp
+	;;
+	ppc64)
+		RFS_BPATH=/releases/ppc/autobuilds
+		BASEURL=$RFS_BASE$RFS_BPATH
 	;;
 	sparc64)
 		RFS_BPATH=/releases/sparc/autobuilds
