@@ -29,6 +29,22 @@ templates:
         netdevice: user
         console_device: ttyAMA0
         append: "console=ttyAMA0 root=/dev/ram0"
+  - name: QEMU sun4u
+    arch: sparc64
+    larch: sparc
+    devicetype: qemu
+    devicename: qemu-sun4u
+    kernelfile: vmlinux
+    mach: sparc64
+    qemu:
+        machine: sun4u
+        memory: 384
+        model: model=sunhme
+        guestfs_interface: ide
+        netdevice: user
+        console_device: ttyS0
+        append: "console=ttyS0 root=/dev/ram0"
+        no_kvm: True
   - name: qemu x86_64
     arch: x86_64
     devicetype: qemu
