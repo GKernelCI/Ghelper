@@ -18,7 +18,7 @@ for kernel_sources in "$@"; do
       docker exec "${gentoo_rootfs}" ls /usr/src/linux -la
       docker exec -w /usr/src/linux "${gentoo_rootfs}" make defconfig
       docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS "$*"
-      docker exec cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/
+      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/
       docker stop "${gentoo_rootfs}"
       docker rm "${gentoo_rootfs}"
     fi
