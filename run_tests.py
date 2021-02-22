@@ -33,6 +33,10 @@ def boot():
         arch = "arm64"
         qarch = "aarch64"
         larch = "arm64"
+    if re.search("CONFIG_PPC64=", kconfigs):
+        arch = "powerpc64"
+        qarch = "ppc64"
+        larch = "powerpc"
     if re.search("CONFIG_SPARC32=", kconfigs):
         arch = "sparc"
         qarch = "sparc"

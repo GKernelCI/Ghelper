@@ -64,6 +64,9 @@ build() {
 	amd64)
 		LINUX_ARCH=x86_64
 	;;
+	ppc64)
+		LINUX_ARCH=powerpc
+	;;
 	esac
 
 	FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
