@@ -81,7 +81,6 @@ def boot():
         if "console_device" in device:
             jobdict["console_device"] = device["console_device"]
 
-        jobdict["JOBNAME"] = "Gentoo test %s %s %s %s %s" % (args.buildname, args.buildnumber, args.arch, args.defconfig, args.toolchain)
         if "qemu" in device:
             if qarch == "unsupported":
                 print("Qemu does not support this")
@@ -156,6 +155,7 @@ def boot():
             if re.search("bz2$", jobdict["rootfs_path"]):
                 jobdict["ROOTFS_COMP"] = "bz2"
 
+            jobdict["JOBNAME"] = "Gentoo test %s %s %s %s %s on %s" % (args.buildname, args.buildnumber, args.arch, args.defconfig, args.toolchain, devicename)
             jobt = template.render(jobdict)
             if not args.noact:
                 jobid = server.scheduler.jobs.submit(jobt)
