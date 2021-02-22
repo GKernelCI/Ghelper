@@ -6,6 +6,8 @@
 {% set root_device = root_device|default('sda') %}
 {%- endif %}
 
+{% set qemu_binary = qemu_binary|default("qemu-system-" + qemu_arch) %}
+
 device_type: {{ DEVICETYPE }}
 
 job_name: {{ JOBNAME }}
@@ -129,6 +131,9 @@ actions:
       minutes: 10
     method: qemu
     media: tmpfs
+    docker:
+      image: kernelci/qemu
+      binary: {{ qemu_binary }}
     prompts:
       - '/ #'
       - '~ #'
