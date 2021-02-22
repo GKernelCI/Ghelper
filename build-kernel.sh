@@ -94,7 +94,7 @@ build() {
 		echo "DO: install modules"
 		mkdir $FDIR/modules
 		make $MAKEOPTS modules_install INSTALL_MOD_PATH="$FDIR/modules/"
-		CPWD=($pwd)
+		CPWD=$(pwd)
 		cd $FDIR/modules
 		echo "DO: targz modules"
 		tar czf ../modules.tar.gz lib
