@@ -25,6 +25,10 @@ def boot():
     kconfig = open("%s/config" % kdir)
     kconfigs = kconfig.read()
     kconfig.close()
+    if re.search("CONFIG_ARM=", kconfigs):
+        arch = "arm"
+        qarch = "arm"
+        larch = "arm"
     if re.search("CONFIG_ARM64=", kconfigs):
         arch = "arm64"
         qarch = "aarch64"
