@@ -24,6 +24,9 @@ if [ -z "$ACTION" ];then
 	ACTION=build
 fi
 
+# renice itself
+renice -n 19 -p $$
+
 build() {
 	local defconfig="$1"
 	local toolchain="$2"
