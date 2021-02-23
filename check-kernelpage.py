@@ -139,8 +139,12 @@ print(revision)
 old_revision = int(revision)-1
 print(old_revision)
 # incremental patch
-incremental_patch_version = new_version + "." + str(old_revision) + \
-    "-" + revision
+if len(new_version_split) == 2:
+    incremental_patch_version = new_version
+    revision = '0'
+else:
+    incremental_patch_version = new_version + "." + str(old_revision) + \
+        "-" + revision
 incremental_patch_name = "patch-" + incremental_patch_version + ".xz"
 # non incremental patch
 patch_version = new_version + "." + revision
@@ -160,7 +164,7 @@ else:
     print("# not incremental version")
     print("revision: " + str(revision))
     patch_url = "http://cdn.kernel.org/pub/linux/kernel/v" + \
-        major_ver + ".x/" + patch_name
+        major_ver + ".x/" + incremental_patch_name
     print(patch_url)
     urlretrieve(patch_url, patch_name)
     with lzma.open(patch_name) as f, open(patch_name[:-3], 'wb') as fout:
