@@ -259,6 +259,27 @@ if ret != 0:
 if len(boots) == 0 and not args.noact:
     sys.exit(1)
 
+def dump_log(jobid, labname, server):
+    # save logs
+    logdir = "%s/logs" % kdir
+    if not os.path.isdir(logdir):
+        os.mkdir(logdir)
+    lablogdir = "%s/%s" % (logdir, labname)
+    if not os.path.isdir(lablogdir):
+        os.mkdir(lablogdir)
+    fd = open("%s/%s.log.txt" % (lablogdir, jobid), 'w')
+    try:
+        r = server.scheduler.job_output(jobid)
+    except xmlrpc.client.Fault:
+        return 1
+    logs = yaml.unsafe_load(r.data)
+    for line in logs:
+        for msg in line["msg"]:
+            fd.write(msg)
+        fd.write("\n")
+    fd.close()
+    return 0
+
 # return true if all tests are ok (or their fail acknowledged via skiplist)
 # return false if any tests failed (without being skiped)
 def check_tests(jobid, labname, server):
@@ -318,6 +339,7 @@ if len(boots) > 0 and args.waitforjobsend:
                         print("Wait for job %d" % jobid)
                         print(jobd)
                     else:
+                        dump_log(jobid, labname, server)
                         boots[labname][jobid]["health"] = jobd["health"]
                         boots[labname][jobid]["state"] = jobd["state"]
                         if jobd["health"] != 'Complete':
