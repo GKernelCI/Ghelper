@@ -29,6 +29,8 @@ copy_artifact() {
 
 	echo "COPY: config"
 	cp "$FDIR/.config" "${COPY_IMAGE_PATH}/config"
+	echo "COPY: build.log"
+	cp "$FDIR/build.log" "${COPY_IMAGE_PATH}/build.log.txt"
 	if [ -e "$FDIR/nomodule" ];then
 		echo "No modules to copy"
 	else
