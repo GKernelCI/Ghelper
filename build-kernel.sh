@@ -80,7 +80,7 @@ build() {
 		make $MAKEOPTS mrproper
 
 		echo "DO: generate config from defconfig"
-		make $MAKEOPTS $defconfig
+		make $MAKEOPTS $defconfig | tee --append $FDIR/build.log
 
 		if [ -e "$BCDIR/config" ];then
 			cp $FDIR/.config $FDIR/.config.old
@@ -95,7 +95,7 @@ build() {
 		fi
 
 		echo "DO: build"
-		make $MAKEOPTS
+		make $MAKEOPTS | tee --append $FDIR/build.log
 	;;
 	modules)
 		rm -f $FDIR/nomodule
@@ -105,10 +105,10 @@ build() {
 			return 0
 		fi
 		echo "DO: build modules"
-		make $MAKEOPTS modules
+		make $MAKEOPTS modules | tee --append $FDIR/build.log
 		echo "DO: install modules"
 		mkdir $FDIR/modules
-		make $MAKEOPTS modules_install INSTALL_MOD_PATH="$FDIR/modules/"
+		make $MAKEOPTS modules_install INSTALL_MOD_PATH="$FDIR/modules/" | tee --append $FDIR/build.log
 		CPWD=$(pwd)
 		cd $FDIR/modules
 		echo "DO: targz modules"
