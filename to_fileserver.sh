@@ -28,6 +28,7 @@ copy_artifact() {
 	done
 
 	echo "COPY: config"
+	cp "$FDIR/.config" "${COPY_IMAGE_PATH}/config.txt"
 	cp "$FDIR/.config" "${COPY_IMAGE_PATH}/config"
 	echo "COPY: build.log"
 	cp "$FDIR/build.log" "${COPY_IMAGE_PATH}/build.log.txt"
