@@ -3,6 +3,13 @@
 ARCH=$1
 # make cannot handle ":" in a path, so we need to replace it
 BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
+TOOLCHAIN_TODO=$(echo $2 | cut -d: -f3)
+if [ -z "$TOOLCHAIN_TODO" ];then
+	echo "ERROR: I do not find the toolchain to use"
+	exit 1
+else
+	echo "DEBUG: build use toolchain $TOOLCHAIN_TODO"
+fi
 BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 
@@ -57,8 +64,5 @@ do
 		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
 		defconfig="defconfig"
 	fi
-	for toolchain in $(ls $BCDIR/toolchain)
-	do
-		copy_artifact $defconfig $toolchain "$BCDIR"
-	done
+	copy_artifact $defconfig $TOOLCHAIN_TODO "$BCDIR"
 done
