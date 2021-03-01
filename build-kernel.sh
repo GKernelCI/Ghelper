@@ -15,6 +15,13 @@ BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
 BUILD_NUMBER=$3
 SOURCEDIR=$4
 ACTION=$5
+TOOLCHAIN_TODO=$(echo $2 | cut -d: -f3)
+if [ -z "$TOOLCHAIN_TODO" ];then
+	echo "ERROR: I do not find the toolchain to use"
+	exit 1
+else
+	echo "DEBUG: build use toolchain $TOOLCHAIN_TODO"
+fi
 
 # hacks before Gbuildbot has all args
 if [ "$2" = 'modules' ];then
@@ -30,11 +37,6 @@ renice -n 19 -p $$
 build() {
 	local defconfig="$1"
 	local toolchain="$2"
-
-	if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH/$toolchain" ];then
-		echo "ERROR: no toolchain $toolchain for $ARCH"
-		return 0
-	fi
 
 	TOOLCHAIN_DIR="$TCONFIG/$HOST_ARCH/$ARCH/$toolchain"
 	echo "DEBUG: found toolchain $toolchain in $TOOLCHAIN_DIR"
@@ -130,6 +132,10 @@ if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH" ];then
 	echo "ERROR: no toolchain for $ARCH"
 	exit 1
 fi
+if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH/$TOOLCHAIN_TODO" ];then
+	echo "ERROR: no toolchain $TOOLCHAIN_TODO for $ARCH"
+	exit 1
+fi
 
 for defconfigdir in $(ls $BCONFIG/$ARCH)
 do
@@ -141,8 +147,5 @@ do
 		echo "ERROR: no defconfig in $BCDIR, defaulting to defconfig"
 		defconfig="defconfig"
 	fi
-	for toolchain in $(ls $BCDIR/toolchain)
-	do
-		build $defconfig $toolchain
-	done
+	build $defconfig $TOOLCHAIN_TODO
 done

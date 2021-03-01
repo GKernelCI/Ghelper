@@ -6,6 +6,13 @@
 ARCH=$1
 # make cannot handle ":" in a path, so we need to replace it
 BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
+TOOLCHAIN_TODO=$(echo $2 | cut -d: -f3)
+if [ -z "$TOOLCHAIN_TODO" ];then
+	echo "ERROR: I do not find the toolchain to use"
+	exit 1
+else
+	echo "DEBUG: build use toolchain $TOOLCHAIN_TODO"
+fi
 BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 LAVA_SERVER=140.211.166.173:10080
@@ -47,23 +54,19 @@ echo "CHECK $SCANDIR"
 for defconfig in $(ls $SCANDIR)
 do
 	echo "CHECK: $defconfig"
-	for toolchain in $(ls $SCANDIR/$defconfig)
-	do
-		echo "CHECK: toolchain $toolchain"
-		echo "BOOT: $SCANDIR/$defconfig/$toolchain"
-		./run_tests.py --arch $ARCH \
-			--buildname $BUILDER_NAME \
-			--buildnumber $BUILD_NUMBER \
-			--toolchain $toolchain \
-			--defconfig $defconfig \
-			--fileserver $FILESERVER \
-			--fileserverfqdn http://$STORAGE_SERVER/ \
-			--waitforjobsend
-		if [ $? -ne 0 ];then
-			echo "ERROR: there is some fail"
-			exit 1
-		fi
-	done
+	echo "BOOT: $SCANDIR/$defconfig/$TOOLCHAIN_TODO"
+	./run_tests.py --arch $ARCH \
+		--buildname $BUILDER_NAME \
+		--buildnumber $BUILD_NUMBER \
+		--toolchain $TOOLCHAIN_TODO \
+		--defconfig $defconfig \
+		--fileserver $FILESERVER \
+		--fileserverfqdn http://$STORAGE_SERVER/ \
+		--waitforjobsend
+	if [ $? -ne 0 ];then
+		echo "ERROR: there is some fail"
+		exit 1
+	fi
 done
 
 exit 0
