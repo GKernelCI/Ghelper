@@ -231,3 +231,28 @@ Tests
 * Gentoo specifics
 * general tests
 	* kselftest
+
+Implementation details
+======================
+Compiling with a native toolchain
+---------------------------------
+Goal: Compiling kernel using official stage3.
+
+For x86_64, it is easy since no cross-compilation is needed.
+But for other arches, we cannot use stage3 as-is.
+Using a worker of the same arch for each arch is not a good solution since lot of arches
+will be either too slow or hard to find.
+
+So the solution is to use qemu-user-static.
+On x86_64, using qemu-user-static imply no performance loss, so we can handle all arches the same way.
+
+With qemu-user-static we can chroot in a stage3, and compile kernel using the toolchain present in it.
+We just need to "mount" sources and output directory in this stage3.
+
+The original stage3 needs some modification:
+- It need a buildbot user with the same id than the worker.
+- It need bc and libelf
+
+Emerging bc/libelf via qemu-user is long, so we use a binary package cache in a volume.
+But even with binpkg, it took too many time, so the final stage3 must be cached, so that we have to
+do nothing when we need it.

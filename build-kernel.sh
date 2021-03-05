@@ -35,9 +35,20 @@ if [ -z "$ACTION" ];then
 fi
 
 MAKEFUNC=do_make
+if [ "$TOOLCHAIN_TODO" = 'gentoo' ];then
+	MAKEFUNC=do_native_make
+fi
+
 do_make() {
 	echo "DOMAKE $*"
 	make $*
+}
+
+do_native_make() {
+	echo "DOMAKE native $*"
+	docker run --privileged \
+		-v gdocker_worker_data:/buildbot \
+		docker-stage3-$ARCH:latest /gentoo/builder.sh $ARCH $(id -u) $(pwd) $FDIR $NBCPU $*
 }
 
 # renice itself
