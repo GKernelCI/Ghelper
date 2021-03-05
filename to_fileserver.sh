@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ARCH=$1
 # make cannot handle ":" in a path, so we need to replace it
 BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
