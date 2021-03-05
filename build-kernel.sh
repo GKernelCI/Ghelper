@@ -31,16 +31,6 @@ build() {
 	local defconfig="$1"
 	local toolchain="$2"
 
-	TCONFIG=$(dirname $(realpath $0))/toolchains
-	HOST_ARCH=$(uname -m)
-	if [ ! -e "$TCONFIG/$HOST_ARCH" ];then
-		echo "ERROR: build not handled for host arch $HOST_ARCH"
-		return 0
-	fi
-	if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH" ];then
-		echo "ERROR: no toolchain for $ARCH"
-		return 0
-	fi
 	if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH/$toolchain" ];then
 		echo "ERROR: no toolchain $toolchain for $ARCH"
 		return 0
@@ -127,6 +117,17 @@ build() {
 BCONFIG="$(dirname $(realpath $0))/build-config/"
 if [ ! -e "$BCONFIG/$ARCH" ];then
 	echo "ERROR: $ARCH is unsupported"
+	exit 1
+fi
+
+TCONFIG=$(dirname $(realpath $0))/toolchains
+HOST_ARCH=$(uname -m)
+if [ ! -e "$TCONFIG/$HOST_ARCH" ];then
+	echo "ERROR: build not handled for host arch $HOST_ARCH"
+	exit 1
+fi
+if [ ! -e "$TCONFIG/$HOST_ARCH/$ARCH" ];then
+	echo "ERROR: no toolchain for $ARCH"
 	exit 1
 fi
 
