@@ -4,7 +4,8 @@ set -e
 # for catching make failing but hidden by tee
 set -o pipefail
 
-MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
+NBCPU=$(getconf _NPROCESSORS_ONLN)
+MAKEOPTS="-j$(( $NBCPU + 1 ))"
 
 if [ $# -lt 1 ]; then
 	echo "Usage: $(basename $0) arch BUILDER_NAME BUILD_NUMBER SOURCEDIR [build|modules]"
