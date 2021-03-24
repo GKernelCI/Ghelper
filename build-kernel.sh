@@ -34,6 +34,12 @@ if [ -z "$ACTION" ];then
 	ACTION=build
 fi
 
+MAKEFUNC=do_make
+do_make() {
+	echo "DOMAKE $*"
+	make $*
+}
+
 # renice itself
 renice -n 19 -p $$
 
@@ -72,10 +78,10 @@ build() {
 	case $ACTION in
 	build)
 		echo "DO: mrproper"
-		make $MAKEOPTS mrproper
+		$MAKEFUNC $MAKEOPTS mrproper
 
 		echo "DO: generate config from defconfig"
-		make $MAKEOPTS $defconfig | tee --append $FDIR/build.log
+		$MAKEFUNC $MAKEOPTS $defconfig | tee --append $FDIR/build.log
 
 		if [ -e "$BCDIR/config" ];then
 			cp $FDIR/.config $FDIR/.config.old
@@ -85,12 +91,12 @@ build() {
 				echo "DEBUG: add config $config"
 				cat $BCDIR/config/$config >> $FDIR/.config
 			done
-			make $MAKEOPTS olddefconfig >> $FDIR/build.log
+			$MAKEFUNC $MAKEOPTS olddefconfig >> $FDIR/build.log
 			diff -u $FDIR/.config.old $FDIR/.config || true
 		fi
 
 		echo "DO: build"
-		make $MAKEOPTS | tee --append $FDIR/build.log
+		$MAKEFUNC $MAKEOPTS | tee --append $FDIR/build.log
 	;;
 	modules)
 		rm -f $FDIR/nomodule
@@ -100,10 +106,10 @@ build() {
 			return 0
 		fi
 		echo "DO: build modules"
-		make $MAKEOPTS modules | tee --append $FDIR/build.log
+		$MAKEFUNC $MAKEOPTS modules | tee --append $FDIR/build.log
 		echo "DO: install modules"
 		mkdir $FDIR/modules
-		make $MAKEOPTS modules_install INSTALL_MOD_PATH="$FDIR/modules/" | tee --append $FDIR/build.log
+		$MAKEFUNC $MAKEOPTS modules_install INSTALL_MOD_PATH="$FDIR/modules/" | tee --append $FDIR/build.log
 		CPWD=$(pwd)
 		cd $FDIR/modules
 		echo "DO: targz modules"
