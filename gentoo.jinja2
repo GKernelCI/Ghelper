@@ -66,7 +66,7 @@ actions:
         steps:
          - ls -l
          - mkdir gentoo
-         - apt-get update && apt-get -y install xz-utils
+         - apt-get update && apt-get -y install xz-utils unzip wget
          - cd gentoo && tar xpf ../stage3*
          - echo 'hostname="gentooci"' > etc/conf.d/hostname
          - echo "rc_nocolor=YES" >> etc/rc.conf
@@ -76,6 +76,12 @@ actions:
          - echo "s0:12345:respawn:/sbin/agetty -L 115200 {{ console_device }} vt100" >> etc/inittab
          - grep ^s etc/inittab
          - sed -i 's,root:.*,root:$6$p3gorwcg$ly73iRHcUPeR4WI2pRWbJv5Gg9SOtPGIHsFN.PH7b94U.F9vebcLVFBMAvJMurxLsKt6i/ZnLmuPj7JfD0d5k/:16834:0:::::,' etc/shadow
+         - wget --quiet https://github.com/gentoo/gentoo/archive/master.zip -O /master.zip
+         - unzip -q /master.zip
+         - mkdir var/db/repos/gentoo/
+         - mv gentoo-master/* var/db/repos/gentoo/
+         - rm -rf gentoo-master/
+         - rm /master.zip
 {%- if MODULES_SHA256 %}
          - tar xf ../modules.tar -C .
          - rm ../modules.tar
@@ -85,7 +91,7 @@ actions:
 {% endif %}
 {#- size must be a power of two for board which emulate sdcard #}
          - du -ah --max-depth=1
-         - mke2fs -d . -m 0 -t ext2 ../gentoo.ext2 2G
+         - mke2fs -d . -m 0 -t ext2 ../gentoo.ext2 4G
          - cd ..
          - rm -rf gentoo
          - rm stage3*
