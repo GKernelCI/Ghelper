@@ -232,22 +232,27 @@ except IOError:
     sys.exit(1)
 t = yaml.safe_load(tfile)
 
-# TODO temp hack to generate a labs.yaml from lavacli identities
-# This will be replaced later
-config_dir = os.environ.get("XDG_CONFIG_HOME", "~/.config")
-config_filename = os.path.expanduser(os.path.join(config_dir, "lavacli.yaml"))
-try:
-    f_conf = open(config_filename, "r", encoding="utf-8")
-    data = yaml.safe_load(f_conf.read())
-except IOError:
-    print("Fail to open %s" % config_filename)
-    sys.exit(1)
-tlabs = {}
-tlabs["labs"] = []
-tlab = {}
-tlab["name"] = "Gentoo"
-tlab["lavauri"] = data["buildbot"]["uri"]
-tlabs["labs"].append(tlab)
+if os.path.isfile("/home/buildbot/labs.yaml"):
+    f_labs = open("/home/buildbot/labs.yaml", 'r')
+    tlabs = yaml.safe_load(f_labs.read())
+    f_labs.close()
+else:
+    # TODO temp hack to generate a labs.yaml from lavacli identities
+    # This will be replaced later
+    config_dir = os.environ.get("XDG_CONFIG_HOME", "~/.config")
+    config_filename = os.path.expanduser(os.path.join(config_dir, "lavacli.yaml"))
+    try:
+        f_conf = open(config_filename, "r", encoding="utf-8")
+        data = yaml.safe_load(f_conf.read())
+    except IOError:
+        print("Fail to open %s" % config_filename)
+        sys.exit(1)
+    tlabs = {}
+    tlabs["labs"] = []
+    tlab = {}
+    tlab["name"] = "Gentoo"
+    tlab["lavauri"] = data["buildbot"]["uri"]
+    tlabs["labs"].append(tlab)
 
 relpath = "%s/%s/%s/%s/%s" % (args.buildname, args.arch, args.buildnumber, args.defconfig, args.toolchain)
 kdir = "%s/%s" % (args.fileserver, relpath)
