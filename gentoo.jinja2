@@ -6,8 +6,6 @@
 {% set root_device = root_device|default('sda') %}
 {%- endif %}
 
-{% set qemu_binary = qemu_binary|default("qemu-system-" + qemu_arch) %}
-
 device_type: {{ DEVICETYPE }}
 
 job_name: {{ JOBNAME }}
@@ -21,6 +19,9 @@ timeouts:
       seconds: 30
 priority: high
 visibility: public
+
+{%- if DEVICETYPE == "qemu" %}
+{% set qemu_binary = qemu_binary|default("qemu-system-" + qemu_arch) %}
 
 context:
     arch: {{ qemu_arch }}
@@ -53,6 +54,14 @@ context:
 {%- endif %}
 {%- if qemu_extra_options is defined %}
     extra_options: {{ qemu_extra_options }}
+{%- endif %}
+# endif qemu
+{%- endif %}
+
+{%- if rootfs_method == "nbd" %}
+protocols:
+  lava-xnbd:
+    port: auto
 {%- endif %}
 
 actions:
@@ -111,6 +120,7 @@ actions:
         sha256sum: {{ MODULES_SHA256 }}
 {% endif %}
 
+{%- if DEVICETYPE == "qemu" %}
 - deploy:
     timeout:
       minutes: 3
@@ -149,6 +159,56 @@ actions:
       username: root
       password_prompt: 'Password:'
       password: {{ auto_login_password }}
+{% endif %}
+
+{# if qemu ######################################################}
+{% else %}
+# case for non-qemu
+
+- deploy:
+    timeout:
+      minutes: 5
+    protocols:
+      lava-xnbd:
+      - action: nbd-deploy
+        request: set_port
+    to: nbd
+    os: oe
+    kernel:
+      url: {{ BOOT_FQDN }}/{{ PATH }}/{{ KERNELFILE }}
+      type: {{ KERNELTYPE }}
+      sha256sum: {{ KERNEL_SHA256 }}
+    modules:
+      url: {{ BOOT_FQDN }}/{{ PATH }}/modules.tar.gz
+      compression: gz
+      sha256sum: {{ MODULES_SHA256 }}
+    initrd:
+      url: {{ RAMD_FQDN }}{{ initrd_path }}
+      compression: gz
+    nbdroot:
+      url: downloads://gentoo.ext2
+
+- boot:
+    timeout:
+      minutes: 5
+    method: {{ boot_method }}
+    commands: nbd
+    prompts:
+      - '/ #'
+      - '~ #'
+{%- if auto_login_password %}
+    auto_login:
+      login_prompt: "login:"
+      username: root
+      password_prompt: 'Password:'
+      password: {{ auto_login_password }}
+{% endif %}
+
+    transfer_overlay:
+      download_command: ifconfig; wget
+      unpack_command: tar -C / -zxf
+
+# endif if qemu
 {% endif %}
 
 - test:
