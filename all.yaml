@@ -78,3 +78,13 @@ templates:
         append: "console=ttyS0 root=/dev/ram0"
         extra_options:
         - '-vga virtio'
+  - name: d2500cc
+    arch: x86_64
+    devicetype: d2500cc
+    kernelfile: bzImage
+    mach: x86_64
+    configs:
+    boot-method: grub
+    console_device: ttyS2
+    tags:
+      - ok
