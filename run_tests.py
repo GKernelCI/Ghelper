@@ -142,7 +142,11 @@ def boot():
             send_to_lab = False
             print("\tCheck %s on %s" % (devicename, lab["name"]))
             server = xmlrpc.client.ServerProxy(lab["lavauri"])
-            devlist = server.scheduler.devices.list()
+            try:
+                devlist = server.scheduler.devices.list()
+            except xmlrpc.client.ProtocolError:
+                print("ERROR: xmlrpc.client.ProtocolError")
+                continue
             # TODO check device state
             for labdevice in devlist:
                 if labdevice["type"] == device["devicetype"]:
