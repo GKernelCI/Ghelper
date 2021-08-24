@@ -25,10 +25,12 @@ def boot():
     kconfig = open("%s/config" % kdir)
     kconfigs = kconfig.read()
     kconfig.close()
+    arch_endian = None
     if re.search("CONFIG_ARM=", kconfigs):
         arch = "arm"
         qarch = "arm"
         larch = "arm"
+        arch_endian = "armel"
     if re.search("CONFIG_ARM64=", kconfigs):
         arch = "arm64"
         qarch = "aarch64"
@@ -53,6 +55,8 @@ def boot():
         arch = "x86"
         qarch = "i386"
         larch = "x86"
+    if arch_endian is None:
+        arch_endian = arch
 
     print("INFO: arch is %s, Linux arch is %s, QEMU arch is %s" % (arch, larch, qarch))
 
@@ -107,6 +111,7 @@ def boot():
                 continue
             print("\tQEMU")
             jobdict["qemu_arch"] = qarch
+            jobdict["rootfs_method"] = 'vdisk'
             if "netdevice" in device["qemu"]:
                 jobdict["qemu_netdevice"] = device["qemu"]["netdevice"]
             if "model" in device["qemu"]:
@@ -154,6 +159,13 @@ def boot():
             if not send_to_lab:
                 print("\tSKIP: not found")
                 continue
+            if "boot-method" in device:
+                jobdict["boot_method"] = device["boot-method"]
+            if not "qemu" in device:
+                jobdict["rootfs_method"] = 'nbd'
+                jobdict["RAMD_FQDN"] = 'http://kernel.montjoie.ovh'
+                jobdict["initrd_path"] = '/initrd/nbd-__ARCH_ENDIAN__/rootfs.cpio.gz'
+                jobdict["initrd_path"] = jobdict["initrd_path"].replace("__ARCH_ENDIAN__", arch_endian).replace("__ARCH__", arch)
             if "dtb" in device:
                 jobdict["DTB"] = device["dtb"]
                 dtbfile = "%s/%s" % (kdir, device["dtb"])
