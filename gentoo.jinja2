@@ -77,11 +77,11 @@ actions:
          - grep ^s etc/inittab
          - sed -i 's,root:.*,root:$6$p3gorwcg$ly73iRHcUPeR4WI2pRWbJv5Gg9SOtPGIHsFN.PH7b94U.F9vebcLVFBMAvJMurxLsKt6i/ZnLmuPj7JfD0d5k/:16834:0:::::,' etc/shadow
 {%- if MODULES_SHA256 %}
-         - tar xf ../modules.tar -C /
+         - tar xf ../modules.tar -C .
          - rm ../modules.tar
-         - chmod 755 /lib
-         - chown -R root:root /lib/modules
-         - ls -l /lib/modules
+         - chmod 755 ./lib
+         - chown -R root:root ./lib/modules
+         - ls -l ./lib/modules
 {% endif %}
 {#- size must be a power of two for board which emulate sdcard #}
          - du -ah --max-depth=1
