@@ -1,0 +1,8 @@
+virtualenv
+requests
+beautifulsoup4
+lxml
+lavacli
+jsonschema
+pyyaml
+python-dateutil
