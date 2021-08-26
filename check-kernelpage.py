@@ -69,19 +69,15 @@ args = parser.parse_args(remaining_argv)
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+# Get the kernel table list from the kernel.org website
 r = requests.get('https://www.kernel.org/')
-
-# print r.status_code
 soup = BeautifulSoup(r.content, "lxml")
-# print soup
 tables = soup.findChildren('table')
-
-# This will get the first (and only) table. Your page may have more.
 my_table = tables[2]
-# print my_table
 tr_table = my_table.findChildren('tr')
 
 
+# clean the html table and get the version number
 def get_version_number(tr_html):
     # get list of td
     tr_html = tr_html.findChildren('td')
@@ -96,6 +92,10 @@ def get_version_number(tr_html):
 def find_new_version(version_number, argument_version):
     version = version_number.split('.', 2)
     try:
+        version = [version[0],version[1].split('-')[0]]
+    except:
+        pass
+    try:
         version = version[0] + '.' + version[1]
         if version == argument_version:
             return version_number
@@ -103,6 +103,27 @@ def find_new_version(version_number, argument_version):
             pass
     except:
         pass
+
+def is_revision(new_version, revision):
+    # Download the kernel base file (still need to be patched)
+    # in case of a revision download it from the
+    # linux repository snapshot
+    if revision:
+        kernel_tarxz = "linux-" + new_version + ".tar.gz"
+        urlretrieve("https://git.kernel.org/torvalds/t/" +
+                    kernel_tarxz, kernel_tarxz)
+        extract(kernel_tarxz)
+    else:
+        kernel_tarxz = "linux-" + new_version + ".tar.xz"
+        if os.path.exists(kernel_tarxz):
+            if os.path.exists("linux-" + new_version):
+                pass
+            else:
+                extract(kernel_tarxz)
+        else:
+            urlretrieve("http://distfiles.gentoo.org/distfiles/" +
+                        kernel_tarxz, kernel_tarxz)
+            extract(kernel_tarxz)
 
 for i in tr_table:
     version_number = get_version_number(i)
@@ -118,58 +139,53 @@ new_version_split = new_version_revision.split('.', 2)
 new_version = new_version_split[0] + '.' + new_version_split[1]
 print("new version: " + new_version)
 
+revision=False
+if "-" in new_version:
+    revision=True
+is_revision(new_version, revision)
 
-kernel_tarxz = "linux-" + new_version + ".tar.xz"
-if os.path.exists(kernel_tarxz):
-    if os.path.exists("linux-" + new_version):
-        pass
+# dowload the incremental patches
+if revision==False:
+    print("new_version_split"+str(new_version_split))
+    major_ver = new_version_split[0]
+    revision = new_version_split[-1]
+    if "[EOL]" in revision:
+        revision = revision[:-6]
+    print(revision)
+    old_revision = int(revision)-1
+    print(old_revision)
+    # incremental patch
+    if len(new_version_split) == 2:
+        incremental_patch_version = new_version
+        revision = '0'
     else:
-        extract(kernel_tarxz)
-else:
-    urlretrieve("http://distfiles.gentoo.org/distfiles/" +
-                kernel_tarxz, kernel_tarxz)
-    extract(kernel_tarxz)
-
-print("new_version_split"+str(new_version_split))
-major_ver = new_version_split[0]
-revision = new_version_split[-1]
-if "[EOL]" in revision:
-    revision = revision[:-6]
-print(revision)
-old_revision = int(revision)-1
-print(old_revision)
-# incremental patch
-if len(new_version_split) == 2:
-    incremental_patch_version = new_version
-    revision = '0'
-else:
-    incremental_patch_version = new_version + "." + str(old_revision) + \
-        "-" + revision
-incremental_patch_name = "patch-" + incremental_patch_version + ".xz"
-# non incremental patch
-patch_version = new_version + "." + revision
-patch_name = "patch-" + patch_version + ".xz"
-if int(revision) > 1:
-    print("# is incremental version")
-    print("revision: " + str(revision))
-    patch_url = "http://cdn.kernel.org/pub/linux/kernel/v" + \
-        major_ver + ".x/incr/" + incremental_patch_name
-    print(patch_url)
-    urlretrieve(patch_url, incremental_patch_name)
-    with lzma.open(incremental_patch_name) as f, open(
-            incremental_patch_name[:-3], 'wb') as fout:
-        file_content = f.read()
-        fout.write(file_content)
-else:
-    print("# not incremental version")
-    print("revision: " + str(revision))
-    patch_url = "http://cdn.kernel.org/pub/linux/kernel/v" + \
-        major_ver + ".x/" + incremental_patch_name
-    print(patch_url)
-    urlretrieve(patch_url, patch_name)
-    with lzma.open(patch_name) as f, open(patch_name[:-3], 'wb') as fout:
-        file_content = f.read()
-        fout.write(file_content)
+        incremental_patch_version = new_version + "." + str(old_revision) + \
+            "-" + revision
+    incremental_patch_name = "patch-" + incremental_patch_version + ".xz"
+    # non incremental patch
+    patch_version = new_version + "." + revision
+    patch_name = "patch-" + patch_version + ".xz"
+    if int(revision) > 1:
+        print("# is incremental version")
+        print("revision: " + str(revision))
+        patch_url = "http://cdn.kernel.org/pub/linux/kernel/v" + \
+            major_ver + ".x/incr/" + incremental_patch_name
+        print(patch_url)
+        urlretrieve(patch_url, incremental_patch_name)
+        with lzma.open(incremental_patch_name) as f, open(
+                incremental_patch_name[:-3], 'wb') as fout:
+            file_content = f.read()
+            fout.write(file_content)
+    else:
+        print("# not incremental version")
+        print("revision: " + str(revision))
+        patch_url = "http://cdn.kernel.org/pub/linux/kernel/v" + \
+            major_ver + ".x/" + incremental_patch_name
+        print(patch_url)
+        urlretrieve(patch_url, patch_name)
+        with lzma.open(patch_name) as f, open(patch_name[:-3], 'wb') as fout:
+            file_content = f.read()
+            fout.write(file_content)
 
 
 
@@ -184,14 +200,15 @@ for i in filenames:
         print("we already have last patch: " + i)
         patch_found = 1
 
-if new_version != 1:
-    if patch_found == 0:
-        shutil.move(incremental_patch_name[:-3], linuxpatches_folder +
-                    incremental_patch_name[:-3] + '.patch')
-else:
-    if patch_found == 0:
-        shutil.move(patch_name[:-3], linuxpatches_folder + patch_name[:-3] +
-                    '.patch')
+if revision==False:
+    if new_version != 1:
+        if patch_found == 0:
+            shutil.move(incremental_patch_name[:-3], linuxpatches_folder +
+                        incremental_patch_name[:-3] + '.patch')
+    else:
+        if patch_found == 0:
+            shutil.move(patch_name[:-3], linuxpatches_folder + patch_name[:-3] +
+                        '.patch')
 
 os.chdir(linuxpatches_folder)
 
