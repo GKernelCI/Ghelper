@@ -59,14 +59,18 @@ found_latest()
 	esac
 
 	LATEST_TXT="latest-stage3-${SARCH}.txt"
-	if [ "$SARCH" = 'amd64' ];then
-		LATEST_TXT="latest-stage3-${SARCH}-openrc.txt"
-	fi
 	curl -s "$BASEURL/$LATEST_TXT" > $LATEST_TXT
 	RET=$?
+	grep -q '404 - Not Found' $LATEST_TXT && RET=1
 	if [ $RET -ne 0 ];then
-		echo "ERROR: fail to grab $BASEURL/$LATEST_TXT"
-		exit 1
+		#echo "DEBUG: retry with openrc variant"
+		LATEST_TXT="latest-stage3-${SARCH}-openrc.txt"
+		curl -s "$BASEURL/$LATEST_TXT" > $LATEST_TXT
+		RET=$?
+		if [ $RET -ne 0 ];then
+			echo "ERROR: fail to grab $BASEURL/$LATEST_TXT"
+			exit 1
+		fi
 	fi
 	echo "ROOTFS_LATEST=$BASEURL/$LATEST_TXT"
 	LATEST=$(grep -v ^# $LATEST_TXT | cut -d' ' -f1)
