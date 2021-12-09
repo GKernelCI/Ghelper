@@ -59,6 +59,9 @@ found_latest()
 	esac
 
 	LATEST_TXT="latest-stage3-${SARCH}.txt"
+	if [ "$SARCH" = 'amd64' ];then
+		LATEST_TXT="latest-stage3-${SARCH}-openrc.txt"
+	fi
 	curl -s "$BASEURL/$LATEST_TXT" > $LATEST_TXT
 	RET=$?
 	if [ $RET -ne 0 ];then
@@ -87,7 +90,7 @@ if [ $CHECK_SIG -eq 1 ];then
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: fail to download $BASEURL/$LATEST.DIGESTS.asc"
-		rm latest-stage3-$SARCH.txt
+		rm ${LATEST_TXT}
 		rm latest-stage3-$SARCH.DIGESTS
 		exit 1
 	fi
