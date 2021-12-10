@@ -98,7 +98,7 @@ actions:
          - ls -l
     images:
       stage3:
-        image_arg: '-drive format=raw,if={{ guestfs_interface }},file={gentoo} -append "root=/dev/{{ root_device }} console={{ console_device }}"'
+        image_arg: '-drive format=raw,if={{ guestfs_interface }},file={gentoo} -append "root=/dev/{{ root_device }} console={{ console_device }} ip=dhcp"'
         url: {{ ROOT_FQDN }}{{ rootfs_path }}
         compression: {{ ROOTFS_COMP }}
 {%- if rootfs_sha512 %}
