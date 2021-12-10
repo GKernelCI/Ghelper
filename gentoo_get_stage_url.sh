@@ -58,13 +58,13 @@ found_latest()
 	;;
 	esac
 
-	LATEST_TXT="latest-stage3-${SARCH}.txt"
+	LATEST_TXT="latest-stage3-${SARCH}-openrc.txt"
 	curl -s "$BASEURL/$LATEST_TXT" > $LATEST_TXT
 	RET=$?
 	grep -q '404 - Not Found' $LATEST_TXT && RET=1
 	if [ $RET -ne 0 ];then
-		#echo "DEBUG: retry with openrc variant"
-		LATEST_TXT="latest-stage3-${SARCH}-openrc.txt"
+		#echo "DEBUG: retry without openrc variant"
+		LATEST_TXT="latest-stage3-${SARCH}.txt"
 		curl -s "$BASEURL/$LATEST_TXT" > $LATEST_TXT
 		RET=$?
 		if [ $RET -ne 0 ];then
