@@ -1,6 +1,13 @@
 #!/bin/sh
 
+DEBUG=0
 RFS_BASE=http://ftp.free.fr/mirrors/ftp.gentoo.org/
+
+debug() {
+	if [ $DEBUG -ge 1 ];then
+		echo "$*"
+	fi
+}
 
 while [ $# -ge 1 ]
 do
@@ -21,6 +28,10 @@ do
 		;;
 		esac
 		SARCH=$ARCH
+		shift
+	;;
+	-d)
+		DEBUG=1
 		shift
 	;;
 	*)
@@ -79,7 +90,7 @@ found_latest()
 
 found_latest || exit $?
 
-DIGESTS_ASC=$(basename "$LATEST.DIGESTS.asc")
+DIGESTS_ASC=$(basename "$LATEST.asc")
 DIGESTS=$(basename "$LATEST.DIGESTS")
 
 curl -s "$BASEURL/$LATEST.DIGESTS" > $DIGESTS
@@ -90,7 +101,8 @@ if [ $? -ne 0 ];then
 fi
 
 if [ $CHECK_SIG -eq 1 ];then
-	curl -s "$BASEURL/$LATEST.DIGESTS.asc" > $DIGESTS_ASC
+	debug "DEBUG: curl $BASEURL/$LATEST.DIGESTS.asc"
+	curl -s "$BASEURL/$LATEST.asc" > $DIGESTS_ASC
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: fail to download $BASEURL/$LATEST.DIGESTS.asc"
@@ -99,7 +111,18 @@ if [ $CHECK_SIG -eq 1 ];then
 		exit 1
 	fi
 
-	gpg --batch -q --verify "$DIGESTS_ASC" >gpg.out 2>gpg.err
+	debug "DEBUG: curl $LATEST"
+	wget -q -N "$BASEURL/$LATEST"
+	RET=$?
+	if [ $RET -ne 0 ];then
+		echo "ERROR: fail to download $BASEURL/$LATEST"
+		rm ${LATEST_TXT}
+		rm latest-stage3-$SARCH.DIGESTS
+		exit 1
+	fi
+
+	debug "DEBUG: GPG check with $DIGESTS_ASC and $(basename $LATEST)"
+	gpg --batch -q --verify "$DIGESTS_ASC" $(basename $LATEST) >gpg.out 2>gpg.err
 	RET=$?
 	if [ $RET -ne 0 ];then
 		echo "ERROR: GPG fail to verify"
