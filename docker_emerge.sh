@@ -7,7 +7,7 @@ FILESERVER=/var/www/fileserver/
 for kernel_sources in "$@"; do 
   if [[ "${kernel_sources}" =~ .ebuild$ ]]; then
     if [[ "${kernel_sources}" =~ sources ]]; then
-      gentoo_rootfs=$(docker run -d --name gentoo"${currentdate}" gentoo/stage3-amd64:latest tail -f /dev/null)
+      gentoo_rootfs=$(docker run -d --name gentoo"${currentdate}" gentoo/stage3:latest tail -f /dev/null)
       echo "DEBUG: use $gentoo_rootfs as docker image"
       docker exec "${gentoo_rootfs}" wget --quiet https://github.com/gentoo/gentoo/archive/master.zip -O /master.zip || exit $?
       docker exec "${gentoo_rootfs}" unzip -q master.zip || exit $?
