@@ -13,7 +13,8 @@ for kernel_sources in "$@"; do
       docker exec "${gentoo_rootfs}" unzip -q master.zip || exit $?
       libself_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/dev-libs/libelf/ -iname "*.ebuild" | sort -Vr | head -n 1)
       bc_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/sys-devel/bc -iname "*.ebuild" | sort -Vr | head -n 1)
-      docker exec "${gentoo_rootfs}" emerge gentoolkit || exit $?
+      gentoolkit_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/app-portage/gentoolkit -iname "*.ebuild" | sort -Vr | head -n 1)
+      docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${gentoolkit_recent_ebuild}" clean merge || exit $?
       docker exec "${gentoo_rootfs}" euse --enable symlink || exit $?
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${libself_recent_ebuild}" clean merge || exit $?
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${bc_recent_ebuild}" clean merge || exit $?
