@@ -25,7 +25,7 @@ for kernel_sources in "$@"; do
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild /gentoo-master/"${kernel_sources}" clean merge || exit $?
       docker exec "${gentoo_rootfs}" ls /usr/src/linux -la || exit $?
       docker exec -w /usr/src/linux "${gentoo_rootfs}" make defconfig || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS "$*" || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       docker stop "${gentoo_rootfs}" || exit $?
       docker rm "${gentoo_rootfs}" || exit $?
