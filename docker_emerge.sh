@@ -9,12 +9,16 @@ for kernel_sources in "$@"; do
     if [[ "${kernel_sources}" =~ sources ]]; then
       gentoo_rootfs=$(docker run -d --name gentoo"${currentdate}" gentoo/stage3:latest tail -f /dev/null)
       echo "DEBUG: use $gentoo_rootfs as docker image"
+      # gentoolkit need PYTHON_TARGETS
+      docker exec "${gentoo_rootfs}" sed -i '$ a PYTHON_TARGETS="python3_9"' /etc/portage/make.conf || exit $?
       docker exec "${gentoo_rootfs}" wget --quiet https://github.com/gentoo/gentoo/archive/master.zip -O /master.zip || exit $?
       docker exec "${gentoo_rootfs}" unzip -q master.zip || exit $?
+      docker exec "${gentoo_rootfs}" ln -s /gentoo-master /var/db/repos/gentoo || exit $?
       libself_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/dev-libs/libelf/ -iname "*.ebuild" | sort -Vr | head -n 1)
       bc_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/sys-devel/bc -iname "*.ebuild" | sort -Vr | head -n 1)
-      gentoolkit_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/app-portage/gentoolkit -iname "*.ebuild" | sort -Vr | head -n 1)
+      gentoolkit_recent_ebuild=$(docker exec "${gentoo_rootfs}" find /gentoo-master/app-portage/gentoolkit -iname "*.ebuild" | grep -v 9999 | sort -Vr | head -n 1)
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${gentoolkit_recent_ebuild}" clean merge || exit $?
+      # We need symlink USE for portage generate /usr/src/linux symlink
       docker exec "${gentoo_rootfs}" euse --enable symlink || exit $?
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${libself_recent_ebuild}" clean merge || exit $?
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild "${bc_recent_ebuild}" clean merge || exit $?
