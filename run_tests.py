@@ -140,7 +140,7 @@ def boot():
             jobdict["qemu_extra_options"].append("-append '%s %s'" % (device["qemu"]["append"], netoptions))
         templateLoader = jinja2.FileSystemLoader(searchpath=templatedir)
         templateEnv = jinja2.Environment(loader=templateLoader)
-        template = templateEnv.get_template("gentoo.jinja2")
+        template = templateEnv.get_template("lava/job/gentoo.jinja2")
 
         # now try to boot on LAVA
         for lab in tlabs["labs"]:
