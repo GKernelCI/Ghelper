@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
-currentdate=$(date +%Y%m%d_%H%M%S)
+currentdate=$1
 FILESERVER=/var/www/fileserver/
 
 gentoo_rootfs=$(docker run -d --name gentoo"${currentdate}" gentoo/stage3:latest tail -f /dev/null)
@@ -16,7 +16,7 @@ function cleanup {
 # be sure to remove gentoo docker container on EXIT
 trap cleanup EXIT
 
-for kernel_sources in "$@"; do 
+for kernel_sources in "${@:2}"; do 
   if [[ "${kernel_sources}" =~ .ebuild$ ]]; then
     if [[ "${kernel_sources}" =~ sources ]]; then
       echo "DEBUG: use $gentoo_rootfs as docker image"
@@ -37,6 +37,7 @@ for kernel_sources in "$@"; do
       # create the fileserver folder if dosen't exist
       mkdir -p "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
+      echo "fileserver: http://140.211.166.171:8080/${kernel_sources}/${currentdate}/"
     fi
   fi
 done
