@@ -3,8 +3,12 @@
 MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
 currentdate=$1
 FILESERVER=/var/www/fileserver/
+# only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed as docker container name
+currentdate_sanitized=${currentdate//:/.}
+currentdate_sanitized=${currentdate_sanitized//,/_}
+currentdate_sanitized=${currentdate_sanitized//+/-}
 
-gentoo_rootfs=$(docker run -d --name gentoo"${currentdate}" gentoo/stage3:latest tail -f /dev/null)
+gentoo_rootfs=$(docker run -d --name gentoo"${currentdate_sanitized}" gentoo/stage3:latest tail -f /dev/null)
 
 # cleaning gentoo docker container
 function cleanup {
