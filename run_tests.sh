@@ -55,7 +55,7 @@ for defconfig in $(ls $SCANDIR)
 do
 	echo "CHECK: $defconfig"
 	echo "BOOT: $SCANDIR/$defconfig/$TOOLCHAIN_TODO"
-	./run_tests.py --arch $ARCH \
+	./deploy.py --arch $ARCH \
 		--buildname $BUILDER_NAME \
 		--buildnumber $BUILD_NUMBER \
 		--toolchain $TOOLCHAIN_TODO \

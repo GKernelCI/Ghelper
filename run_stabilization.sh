@@ -46,7 +46,7 @@ if [ -e config.ini ];then
 	. config.ini
 fi
 
-SCANDIR="$FILESERVER/$BUILDER_NAME/$ARCH/$BUILD_NUMBER/"
+SCANDIR="$FILESERVER/sys-kernel/$BUILDER_NAME/$ARCH/$BUILD_NUMBER/"
 if [ ! -e "$SCANDIR" ];then
 	echo "ERROR: $SCANDIR does not exists"
 	exit 1
@@ -57,7 +57,7 @@ for defconfig in $(ls $SCANDIR)
 do
 	echo "CHECK: $defconfig"
 	echo "BOOT: $SCANDIR/$defconfig/$TOOLCHAIN_TODO"
-	./run_tests.py --arch $ARCH \
+	./deploy.py --arch $ARCH \
 		--buildname $BUILDER_NAME \
 		--buildnumber $BUILD_NUMBER \
 		--toolchain $TOOLCHAIN_TODO \
