@@ -31,7 +31,7 @@ for kernel_sources in "${@:2}"; do
       docker exec "${gentoo_rootfs}" ln -s /gentoo-master /var/db/repos/gentoo || exit $?
       # remove all "Unable to unshare: EPERM message"
       docker exec "${gentoo_rootfs}" sed -i '$ a FEATURES="-ipc-sandbox -network-sandbox"' /etc/portage/make.conf || exit $?
-      docker exec "${gentoo_rootfs}" emerge --nospinner -v virtual/libelf bc gentoolkit|| exit $?
+      docker exec "${gentoo_rootfs}" emerge --nospinner -v virtual/libelf sys-devel/bc gentoolkit|| exit $?
       # We need symlink USE for portage generate /usr/src/linux symlink
       docker exec "${gentoo_rootfs}" euse --enable symlink || exit $?
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild /gentoo-master/"${kernel_sources}" clean merge || exit $?
