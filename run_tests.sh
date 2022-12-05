@@ -50,6 +50,7 @@ if [ ! -e "$SCANDIR" ];then
 	exit 1
 fi
 
+
 echo "CHECK $SCANDIR"
 for defconfig in $(ls $SCANDIR)
 do
@@ -60,6 +61,7 @@ do
 		--buildnumber $BUILD_NUMBER \
 		--toolchain $TOOLCHAIN_TODO \
 		--defconfig $defconfig \
+    --relpath "$BUILDER_NAME/$ARCH/$BUILD_NUMBER/$defconfig/$TOOLCHAIN_TODO"  \
 		--fileserver $FILESERVER \
 		--fileserverfqdn http://$STORAGE_SERVER/ \
 		--waitforjobsend
