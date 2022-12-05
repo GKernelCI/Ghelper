@@ -17,6 +17,9 @@ function cleanup {
   docker rm "${gentoo_rootfs}" || exit $?
 }
 
+fileserver=()
+fileserver_index=0
+
 # be sure to remove gentoo docker container on EXIT
 trap cleanup EXIT
 
@@ -41,7 +44,11 @@ for kernel_sources in "${@:2}"; do
       # create the fileserver folder if dosen't exist
       mkdir -p "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
-      echo "fileserver: http://140.211.166.171:8080/${kernel_sources}/${currentdate}/"
+      # set fileserver
+      fileserver[fileserver_index]="/${kernel_sources}/${currentdate}/ " || exit $?
+      fileserver_index=$(( fileserver_index+=1 )) || exit $?
     fi
   fi
 done
+
+echo "FILESERVERS=${fileserver[*]}"
