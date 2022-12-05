@@ -237,6 +237,7 @@ parser.add_argument("--buildname", type=str, help="buildbot build name", require
 parser.add_argument("--buildnumber", type=str, help="buildbot buildnumber", required=True)
 parser.add_argument("--defconfig", type=str, help="The defconfig name", required=True)
 parser.add_argument("--toolchain", type=str, help="The toolchain name", required=True)
+parser.add_argument("--relpath", type=str, help="The related path", required=True)
 parser.add_argument("--fileserver", type=str, help="The fileserver basepath", required=True)
 parser.add_argument("--fileserverfqdn", type=str, help="An URL to the base fileserver", required=True)
 args = parser.parse_args()
@@ -270,7 +271,7 @@ else:
     tlab["lavauri"] = data["buildbot"]["uri"]
     tlabs["labs"].append(tlab)
 
-relpath = "%s/%s/%s/%s/%s" % (args.buildname, args.arch, args.buildnumber, args.defconfig, args.toolchain)
+relpath = args.relpath
 kdir = "%s/%s" % (args.fileserver, relpath)
 
 ret = boot()
