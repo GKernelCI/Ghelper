@@ -48,11 +48,11 @@ shift "$((OPTIND-1))" # Shift off the options and optional --.
 
 kernel_arch_target="x86_64"
 if [ $kernel_arch = "arm" ]; then
-	kernel_arch_target="arm"
+  kernel_arch_target="arm"
 fi
 
 # End of file
 for i in ../linux-patches/*.patch; do
-	echo "${i}"
-	yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d linux-*/ < "${i}";
+  echo "${i}"
+  yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d linux-*/ < "${i}";
 done
