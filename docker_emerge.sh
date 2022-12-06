@@ -40,20 +40,20 @@ for kernel_sources in "${@:2}"; do
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild /gentoo-master/"${kernel_sources}" clean merge || exit $?
       docker exec "${gentoo_rootfs}" ls /usr/src/linux -la || exit $?
       # build kernel
-      docker exec "${gentoo_rootfs}" mkdir -p /usr/src/linux/opt/ || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make defconfig | tee --append /usr/src/linux/opt/build.log" || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS | tee --append /usr/src/linux/opt/build.log" || exit $?
+      docker exec "${gentoo_rootfs}" mkdir -p /opt/modules/ || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make defconfig | tee --append /opt/build.log" || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS | tee --append /opt/build.log" || exit $?
       # build modules
-      docker exec "${gentoo_rootfs}" mkdir -p /usr/src/linux/opt/modules || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules | tee --append /usr/src/linux/opt/build.log" || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules_install INSTALL_MOD_PATH='/usr/src/linux/opt/modules/' | tee --append /usr/src/linux/opt/build.log" || exit $?
-      docker exec -w /usr/src/linux/opt/modules "${gentoo_rootfs}" tar czf ../modules.tar.gz lib  || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules | tee --append /opt/build.log" || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules_install INSTALL_MOD_PATH='/opt/modules/' | tee --append /opt/build.log" || exit $?
+      docker exec -w /opt/modules "${gentoo_rootfs}" tar czf ../modules.tar.gz lib  || exit $?
       # create the fileserver folder if dosen't exist
-      mkdir -p "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
-      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
-      docker cp "${gentoo_rootfs}":/usr/src/linux/.config "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/config || exit $?
-      docker cp "${gentoo_rootfs}":/usr/src/linux/opt/modules.tar.gz "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
-      docker cp "${gentoo_rootfs}":/usr/src/linux/opt/build.log "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
+      FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${currentdate}/"
+      mkdir -p "$FILESERVER_FULL_DIR" || exit $?
+      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "$FILESERVER_FULL_DIR" || exit $?
+      docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
+      docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
+      docker cp "${gentoo_rootfs}":/opt/build.log "$FILESERVER_FULL_DIR" || exit $?
       # set fileserver
       fileserver[fileserver_index]="/${kernel_sources}/${currentdate}/ " || exit $?
       fileserver_index=$(( fileserver_index+=1 )) || exit $?
