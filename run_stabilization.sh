@@ -18,10 +18,9 @@ BUILD_NUMBER=$3 # 16
 DISCOVERY_TIME=$4
 PACKAGES_ARRAY=${*:5}
 FILESERVER=/var/www/fileserver/
-LAVA_SERVER=140.211.166.173:10080
 STORAGE_SERVER=140.211.166.171:8080
 SCRIPT_DIR=$(cd "$(dirname "$0")"|| exit;pwd)
-echo $PACKAGES_ARRAY
+echo "$PACKAGES_ARRAY"
 
 usage() {
   echo "Usage: $0 ARCH BUILDER_NAME BUILD_NUMBER"
@@ -56,24 +55,16 @@ do
   fi
 
   echo "CHECK $SCANDIR"
-  for defconfig in $(ls $SCANDIR)
-  do
-    echo "CHECK: $defconfig"
-    echo "BOOT: $SCANDIR/$defconfig/$TOOLCHAIN_TODO"
-    ./deploy.py --arch $ARCH \
-      --buildname $BUILDER_NAME \
-      --buildnumber $BUILD_NUMBER \
-      --toolchain $TOOLCHAIN_TODO \
-      --defconfig $defconfig \
-      --relpath "/$package/$DISCOVERY_TIME/"  \
-      --fileserver $FILESERVER \
-      --fileserverfqdn http://$STORAGE_SERVER/ \
-      --waitforjobsend
-    if [ $? -ne 0 ];then
-      echo "ERROR: there is some fail"
-      exit 1
-    fi
-  done
+  ./deploy.py --arch "$ARCH" \
+    --buildname "$BUILDER_NAME" \
+    --buildnumber "$BUILD_NUMBER" \
+    --toolchain "$TOOLCHAIN_TODO" \
+    --defconfig "x86_64_defconfig" \
+    --relpath "/$package/$DISCOVERY_TIME/"  \
+    --fileserver $FILESERVER \
+    --fileserverfqdn "http://$STORAGE_SERVER/" \
+    --waitforjobsend \
+    || exit $?
 done
 
 exit 0
