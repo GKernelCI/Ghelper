@@ -39,12 +39,21 @@ for kernel_sources in "${@:2}"; do
       docker exec "${gentoo_rootfs}" euse --enable symlink || exit $?
       docker exec "${gentoo_rootfs}" /usr/bin/ebuild /gentoo-master/"${kernel_sources}" clean merge || exit $?
       docker exec "${gentoo_rootfs}" ls /usr/src/linux -la || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" make defconfig || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS || exit $?
+      # build kernel
+      docker exec "${gentoo_rootfs}" mkdir -p /opt/ || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" make defconfig | tee --append /opt/build.log  || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS | tee --append /opt/build.log  || exit $?
+      # build modules
+      docker exec "${gentoo_rootfs}" mkdir -p /opt/modules || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS modules | tee --append /opt/build.log   || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" make $MAKEOPTS modules_install INSTALL_MOD_PATH="/opt/modules/"| tee --append /opt/build.log  || exit $?
+      docker exec -w /opt/modules "${gentoo_rootfs}" tar czf ../modules.tar.gz lib  || exit $?
       # create the fileserver folder if dosen't exist
       mkdir -p "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/config || exit $?
+      docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
+      docker cp "${gentoo_rootfs}":/opt/build.log "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       # set fileserver
       fileserver[fileserver_index]="/${kernel_sources}/${currentdate}/ " || exit $?
       fileserver_index=$(( fileserver_index+=1 )) || exit $?
