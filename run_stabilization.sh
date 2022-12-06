@@ -65,7 +65,7 @@ do
       --buildnumber $BUILD_NUMBER \
       --toolchain $TOOLCHAIN_TODO \
       --defconfig $defconfig \
-      --relpath $FILESERVER/$package/$DISCOVERY_TIME/  \
+      --relpath "/$package/$DISCOVERY_TIME/"  \
       --fileserver $FILESERVER \
       --fileserverfqdn http://$STORAGE_SERVER/ \
       --waitforjobsend
