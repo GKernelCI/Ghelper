@@ -44,6 +44,7 @@ for kernel_sources in "${@:2}"; do
       # create the fileserver folder if dosen't exist
       mkdir -p "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/ || exit $?
+      docker cp "${gentoo_rootfs}":/usr/src/linux/.config "${FILESERVER}"/"${kernel_sources}"/"${currentdate}"/config || exit $?
       # set fileserver
       fileserver[fileserver_index]="/${kernel_sources}/${currentdate}/ " || exit $?
       fileserver_index=$(( fileserver_index+=1 )) || exit $?

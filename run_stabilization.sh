@@ -55,8 +55,6 @@ do
     exit 1
   fi
 
-  echo "CONFIG_X86_64=True"  > $SCANDIR/config
-
   echo "CHECK $SCANDIR"
   for defconfig in $(ls $SCANDIR)
   do
