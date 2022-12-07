@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 # check the artifact directory of a build for generating LAVA jobs
 # LAVA lifecycle (Generating, submit, check) is done by run_tests.py
