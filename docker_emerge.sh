@@ -1,10 +1,11 @@
 #!/bin/bash
 
 MAKEOPTS="-j$(( $(getconf _NPROCESSORS_ONLN) + 1 ))"
-currentdate=$1
+ARCH=$1
+CURRENTDATE=$2
 FILESERVER=/var/www/fileserver/
 # only [a-zA-Z0-9][a-zA-Z0-9_.-] are allowed as docker container name
-currentdate_sanitized=${currentdate//:/.}
+currentdate_sanitized=${CURRENTDATE//:/.}
 currentdate_sanitized=${currentdate_sanitized//,/_}
 currentdate_sanitized=${currentdate_sanitized//+/-}
 
@@ -48,14 +49,14 @@ for kernel_sources in "${@:2}"; do
       docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules_install INSTALL_MOD_PATH='/opt/modules/' | tee --append /opt/build.log" || exit $?
       docker exec -w /opt/modules "${gentoo_rootfs}" tar czf ../modules.tar.gz lib  || exit $?
       # create the fileserver folder if dosen't exist
-      FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${currentdate}/"
+      FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${CURRENTDATE}/"
       mkdir -p "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
       docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/opt/build.log "$FILESERVER_FULL_DIR" || exit $?
       # set fileserver
-      fileserver[fileserver_index]="/${kernel_sources}/${currentdate}/ " || exit $?
+      fileserver[fileserver_index]="/${kernel_sources}/${CURRENTDATE}/ " || exit $?
       fileserver_index=$(( fileserver_index+=1 )) || exit $?
     fi
   fi
