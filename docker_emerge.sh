@@ -9,7 +9,7 @@ currentdate_sanitized=${CURRENTDATE//:/.}
 currentdate_sanitized=${currentdate_sanitized//,/_}
 currentdate_sanitized=${currentdate_sanitized//+/-}
 
-gentoo_rootfs=$(docker run -d --name gentoo"${currentdate_sanitized}" gentoo/stage3:latest tail -f /dev/null)
+gentoo_rootfs=$(docker run -d --platform="$ARCH" --name gentoo"${currentdate_sanitized}" gentoo/stage3:latest tail -f /dev/null)
 
 # cleaning gentoo docker container
 function cleanup {
@@ -17,6 +17,21 @@ function cleanup {
   docker stop "${gentoo_rootfs}" || exit $?
   docker rm "${gentoo_rootfs}" || exit $?
 }
+
+LINUX_ARCH=$ARCH
+# insert ARCH hack for name here
+case $ARCH in
+amd64)
+  LINUX_ARCH=x86_64
+;;
+ppc64)
+  LINUX_ARCH=powerpc
+;;
+386)
+  LINUX_ARCH=i386
+;;
+esac
+MAKEOPTS="$MAKEOPTS ARCH=$LINUX_ARCH"
 
 fileserver=()
 fileserver_index=0
@@ -42,21 +57,21 @@ for kernel_sources in "${@:2}"; do
       docker exec "${gentoo_rootfs}" ls /usr/src/linux -la || exit $?
       # build kernel
       docker exec "${gentoo_rootfs}" mkdir -p /opt/modules/ || exit $?
-      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make defconfig | tee --append /opt/build.log" || exit $?
+      docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS defconfig | tee --append /opt/build.log" || exit $?
       docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS | tee --append /opt/build.log" || exit $?
       # build modules
       docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules | tee --append /opt/build.log" || exit $?
       docker exec -w /usr/src/linux "${gentoo_rootfs}" bash -c "make $MAKEOPTS modules_install INSTALL_MOD_PATH='/opt/modules/' | tee --append /opt/build.log" || exit $?
       docker exec -w /opt/modules "${gentoo_rootfs}" tar czf ../modules.tar.gz lib  || exit $?
       # create the fileserver folder if dosen't exist
-      FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${CURRENTDATE}/"
+      FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${ARCH}/${CURRENTDATE}/"
       mkdir -p "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
       docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/opt/build.log "$FILESERVER_FULL_DIR" || exit $?
       # set fileserver
-      fileserver[fileserver_index]="/${kernel_sources}/${CURRENTDATE}/ " || exit $?
+      fileserver[fileserver_index]="/${kernel_sources}/${ARCH}/${CURRENTDATE}/" || exit $?
       fileserver_index=$(( fileserver_index+=1 )) || exit $?
     fi
   fi
