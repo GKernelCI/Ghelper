@@ -40,6 +40,20 @@ if [ -z "$BUILD_NUMBER" ] ;then
   exit 1
 fi
 
+LINUX_ARCH=$ARCH
+# insert ARCH hack for name here
+case $ARCH in
+amd64)
+  LINUX_ARCH=x86_64
+;;
+ppc64)
+  LINUX_ARCH=powerpc
+;;
+386)
+  LINUX_ARCH=i386
+;;
+esac
+
 # permit to override default
 if [ -e config.ini ];then
   echo "INFO: Loading default from config.ini"
@@ -47,19 +61,19 @@ if [ -e config.ini ];then
 fi
 for package in $PACKAGES_ARRAY
 do
-  SCANDIR="$FILESERVER/$package/$DISCOVERY_TIME/"
+  SCANDIR="$FILESERVER/$package/$ARCH/$DISCOVERY_TIME/"
   if [ ! -e "$SCANDIR" ];then
     echo "ERROR: $SCANDIR does not exists"
     exit 1
   fi
 
   echo "CHECK $SCANDIR"
-  ./deploy.py --arch "$ARCH" \
+  ./deploy.py --arch "$LINUX_ARCH" \
     --buildname "$BUILDER_NAME" \
     --buildnumber "$BUILD_NUMBER" \
     --toolchain "$TOOLCHAIN_TODO" \
-    --defconfig "x86_64_defconfig" \
-    --relpath "/$package/$DISCOVERY_TIME/"  \
+    --defconfig "${LINUX_ARCH}_defconfig" \
+    --relpath "/$package/$ARCH/$DISCOVERY_TIME/"  \
     --fileserver $FILESERVER \
     --fileserverfqdn "http://$STORAGE_SERVER/" \
     --waitforjobsend \
