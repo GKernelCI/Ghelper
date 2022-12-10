@@ -44,7 +44,7 @@ for kernel_sources in "${@:2}"; do
     if [[ "${kernel_sources}" =~ sources ]]; then
       echo "DEBUG: use $gentoo_rootfs as docker image"
       # gentoolkit need PYTHON_TARGETS
-      docker exec "${gentoo_rootfs}" sed -i '$ a PYTHON_TARGETS="python3_9"' /etc/portage/make.conf || exit $?
+      docker exec "${gentoo_rootfs}" sed -i '$ a PYTHON_TARGETS="python3_10"' /etc/portage/make.conf || exit $?
       docker exec "${gentoo_rootfs}" wget --quiet https://github.com/gentoo/gentoo/archive/master.zip -O /master.zip || exit $?
       docker exec "${gentoo_rootfs}" unzip -q master.zip || exit $?
       docker exec "${gentoo_rootfs}" ln -s /gentoo-master /var/db/repos/gentoo || exit $?
