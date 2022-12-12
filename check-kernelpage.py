@@ -123,8 +123,15 @@ def is_revision(new_version, revision):
             else:
                 extract(kernel_tarxz)
         else:
-            urlretrieve("http://distfiles.gentoo.org/distfiles/" +
-                        kernel_tarxz, kernel_tarxz)
+            try:
+                print("Try getting "+kernel_tarxz+" from distfiles")
+                urlretrieve("http://distfiles.gentoo.org/distfiles/" +
+                            kernel_tarxz, kernel_tarxz)
+            except:
+                kernel_tarxz = "linux-" + new_version + ".tar.gz"
+                print("getting "+kernel_tarxz+" from git.kernel.org")
+                urlretrieve("https://git.kernel.org/torvalds/t/" +
+                            kernel_tarxz, kernel_tarxz)
             extract(kernel_tarxz)
 
 for i in tr_table:
