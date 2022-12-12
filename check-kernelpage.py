@@ -16,7 +16,7 @@ if sys.version_info.major == 3:
 
     def extract(filename):
         with tarfile.open(filename) as tar:
-            tar.extractall()
+            tar.extractall('kernel-sources/')
 
 else:
     from urllib import urlretrieve
@@ -27,7 +27,7 @@ else:
             file_content = f.read()
             fout.write(file_content)
         with tarfile.open(filename[:-3]) as tar:
-            tar.extractall()
+            tar.extractall('kernel-sources/')
 
 from configparser import ConfigParser
 import os
@@ -108,6 +108,8 @@ def is_revision(new_version, revision):
     # Download the kernel base file (still need to be patched)
     # in case of a revision download it from the
     # linux repository snapshot
+    kernel_dir = "kernel-sources/"
+    os.mkdir(kernel_dir)
     if revision:
         kernel_tarxz = "linux-" + new_version + ".tar.gz"
         urlretrieve("https://git.kernel.org/torvalds/t/" +
