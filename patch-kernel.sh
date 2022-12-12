@@ -19,6 +19,7 @@ EOF
 # Initialize our own variables:
 kernel_version=""
 kernel_arch="amd64"
+SCRIPT_DIR=$(cd "$(dirname "$0")"|| exit;pwd)
 verbose=0
 
 OPTIND=1
@@ -47,12 +48,12 @@ done
 shift "$((OPTIND-1))" # Shift off the options and optional --.
 
 kernel_arch_target="x86_64"
-if [ $kernel_arch = "arm" ]; then
+if [ "$kernel_arch" = "arm" ]; then
   kernel_arch_target="arm"
 fi
 
 # End of file
 for i in ../linux-patches/*.patch; do
   echo "${i}"
-  yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d linux-*/ < "${i}";
+  yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d "${SCRIPT_DIR}/kernel-sources/linux-*/" < "${i}";
 done

@@ -6,18 +6,25 @@ set -o pipefail
 
 NBCPU=$(getconf _NPROCESSORS_ONLN)
 MAKEOPTS="-j$(( $NBCPU + 1 ))"
+#get script direcotory
+SCRIPT_DIR=$(cd "$(dirname "$0")"|| exit;pwd)
 
 if [ $# -lt 1 ]; then
-  echo "Usage: $(basename $0) arch BUILDER_NAME BUILD_NUMBER SOURCEDIR [build|modules]"
+  echo "Usage: $(basename $0) arch BUILDER_NAME BUILD_NUMBER [build|modules]"
   exit 1
 fi
+
+is_kernel() {
+  cd kernel-sources/linux-*/ || exit $?
+}
+# get into kernel directory
+is_kernel
 
 ARCH=$1
 # make cannot handle ":" in a path, so we need to replace it
 BUILDER_NAME=$(echo $2 | sed 's,:,_,g')
 BUILD_NUMBER=$3
-SOURCEDIR=$4
-ACTION=$5
+ACTION=$4
 TOOLCHAIN_TODO=$(echo $2 | cut -d: -f3)
 if [ -z "$TOOLCHAIN_TODO" ];then
   echo "ERROR: I do not find the toolchain to use"
@@ -81,7 +88,7 @@ build() {
   ;;
   esac
 
-  FDIR="$(dirname $(realpath $0))/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
+  FDIR="${SCRIPT_DIR}/linux-$ARCH-build/$BUILDER_NAME/$BUILD_NUMBER/$defconfig/$toolchain"
 
   echo "DEBUG: $ACTION for $ARCH/$defconfig to $FDIR"
   MAKEOPTS="$MAKEOPTS ARCH=$LINUX_ARCH O=$FDIR"
@@ -136,13 +143,13 @@ build() {
   esac
 }
 
-BCONFIG="$(dirname $(realpath $0))/build-config/"
+BCONFIG="${SCRIPT_DIR}/build-config/"
 if [ ! -e "$BCONFIG/$ARCH" ];then
   echo "ERROR: $ARCH is unsupported"
   exit 1
 fi
 
-TCONFIG=$(dirname $(realpath $0))/toolchains
+TCONFIG=${SCRIPT_DIR}/toolchains
 HOST_ARCH=$(uname -m)
 if [ ! -e "$TCONFIG/$HOST_ARCH" ];then
   echo "ERROR: build not handled for host arch $HOST_ARCH"
