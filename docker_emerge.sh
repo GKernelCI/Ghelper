@@ -19,16 +19,30 @@ function cleanup {
 }
 
 LINUX_ARCH=$ARCH
+IMAGE_ARCH=$ARCH
 # insert ARCH hack for name here
 case $ARCH in
 amd64)
   LINUX_ARCH=x86_64
+  IMAGE_ARCH=x86
+  IMAGE_FILE=bzImage
 ;;
 ppc64)
   LINUX_ARCH=powerpc
+  IMAGE_FILE=vmlinux
 ;;
 386)
   LINUX_ARCH=i386
+  IMAGE_ARCH=arm
+  IMAGE_FILE=zImage
+;;
+arm)
+  IMAGE_ARCH=arm
+  IMAGE_FILE=zImage
+;;
+arm64)
+  IMAGE_ARCH=arm64
+  IMAGE_FILE=Image
 ;;
 esac
 MAKEOPTS="$MAKEOPTS ARCH=$LINUX_ARCH"
@@ -66,7 +80,7 @@ for kernel_sources in "${@:2}"; do
       # create the fileserver folder if dosen't exist
       FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${ARCH}/${CURRENTDATE}/"
       mkdir -p "$FILESERVER_FULL_DIR" || exit $?
-      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/x86/boot/bzImage "$FILESERVER_FULL_DIR" || exit $?
+      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/${IMAGE_ARCH}/boot/bzImage "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
       docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/opt/build.log "$FILESERVER_FULL_DIR" || exit $?
