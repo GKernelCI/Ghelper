@@ -55,5 +55,5 @@ fi
 # End of file
 for i in ../linux-patches/*.patch; do
   echo "${i}"
-  yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d "${SCRIPT_DIR}/kernel-sources/linux-*/" < "${i}";
+  yes "" | patch -p1 --no-backup-if-mismatch -f -N -s -d "${SCRIPT_DIR}"/kernel-sources/linux-*/ < "${i}";
 done
