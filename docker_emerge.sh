@@ -33,8 +33,8 @@ ppc64)
 ;;
 386)
   LINUX_ARCH=i386
-  IMAGE_ARCH=arm
-  IMAGE_FILE=zImage
+  IMAGE_ARCH=x86
+  IMAGE_FILE=bzImage
 ;;
 arm)
   IMAGE_ARCH=arm
