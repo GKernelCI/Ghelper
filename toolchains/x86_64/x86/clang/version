@@ -1,0 +1,5 @@
+#!/bin/sh
+
+clang --version
+llvm-ar --version
+ld.lld --version
