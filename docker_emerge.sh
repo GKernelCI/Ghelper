@@ -27,8 +27,9 @@ amd64)
   IMAGE_ARCH=x86
   IMAGE_FILE=bzImage
 ;;
-ppc64)
+ppc64le)
   LINUX_ARCH=powerpc
+  IMAGE_ARCH=powerpc
   IMAGE_FILE=vmlinux
 ;;
 386)
