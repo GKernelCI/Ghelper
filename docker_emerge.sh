@@ -51,6 +51,20 @@ MAKEOPTS="$MAKEOPTS ARCH=$LINUX_ARCH"
 fileserver=()
 fileserver_index=0
 
+find_kernel_image(){
+  echo "Kernel image not found at /usr/src/linux/arch/${IMAGE_ARCH}/boot/${IMAGE_FILE}"
+  echo "Trying to find it"
+  # show find kernel images
+  docker exec "${gentoo_rootfs}" bash -c "find . -type f \( -iname 'bzImage' -o -iname 'Image' -o -iname 'zImage' -o -iname 'vmlinux' \)"
+  # move kernel images to /opt/
+  docker exec "${gentoo_rootfs}" bash -c "find . -type f \( -iname 'bzImage' -o -iname 'Image' -o -iname 'zImage' -o -iname 'vmlinux' \) -exec cp -v {} /opt/ \;"
+  #try to get the kernel image
+  docker cp "${gentoo_rootfs}":/opt/bzImage "$FILESERVER_FULL_DIR"
+  docker cp "${gentoo_rootfs}":/opt/Image "$FILESERVER_FULL_DIR"
+  docker cp "${gentoo_rootfs}":/opt/vmlinux "$FILESERVER_FULL_DIR"
+  docker cp "${gentoo_rootfs}":/opt/zImage "$FILESERVER_FULL_DIR"
+}
+
 # be sure to remove gentoo docker container on EXIT
 trap cleanup EXIT
 
@@ -81,8 +95,8 @@ for kernel_sources in "${@:2}"; do
       # create the fileserver folder if dosen't exist
       FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${ARCH}/${CURRENTDATE}/"
       mkdir -p "$FILESERVER_FULL_DIR" || exit $?
-      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/${IMAGE_ARCH}/boot/${IMAGE_FILE} "$FILESERVER_FULL_DIR" || exit $?
-      docker exec "${gentoo_rootfs}" bash -c "/usr/bin/find . -type f \( -iname 'bzImage' -o -iname 'Image' -o -iname 'zImage' -o -iname 'vmlinux' \) -exec cp -v {} ${FILESERVER_FULL_DIR} \;"  || exit $?
+      # don't exit when there is no file try to find it instead
+      docker cp "${gentoo_rootfs}":/usr/src/linux/arch/${IMAGE_ARCH}/boot/${IMAGE_FILE} "$FILESERVER_FULL_DIR" || find_kernel_image
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config.txt || exit $?
       docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
