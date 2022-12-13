@@ -82,6 +82,7 @@ for kernel_sources in "${@:2}"; do
       FILESERVER_FULL_DIR="${FILESERVER}/${kernel_sources}/${ARCH}/${CURRENTDATE}/"
       mkdir -p "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/${IMAGE_ARCH}/boot/${IMAGE_FILE} "$FILESERVER_FULL_DIR" || exit $?
+      docker exec "${gentoo_rootfs}" bash -c "/usr/bin/find . -type f \( -iname 'bzImage' -o -iname 'Image' -o -iname 'zImage' -o -iname 'vmlinux' \) -exec cp -v {} ${FILESERVER_FULL_DIR} \;"  || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config.txt || exit $?
       docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
