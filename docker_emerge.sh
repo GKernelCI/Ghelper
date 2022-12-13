@@ -83,8 +83,10 @@ for kernel_sources in "${@:2}"; do
       mkdir -p "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/arch/${IMAGE_ARCH}/boot/bzImage "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config || exit $?
+      docker cp "${gentoo_rootfs}":/usr/src/linux/.config "$FILESERVER_FULL_DIR"/config.txt || exit $?
       docker cp "${gentoo_rootfs}":/opt/modules.tar.gz "$FILESERVER_FULL_DIR" || exit $?
       docker cp "${gentoo_rootfs}":/opt/build.log "$FILESERVER_FULL_DIR" || exit $?
+      docker cp "${gentoo_rootfs}":/opt/build.log "$FILESERVER_FULL_DIR"/build.log.txt || exit $?
       # set fileserver
       fileserver[fileserver_index]="/${kernel_sources}/${ARCH}/${CURRENTDATE}/" || exit $?
       fileserver_index=$(( fileserver_index+=1 )) || exit $?
