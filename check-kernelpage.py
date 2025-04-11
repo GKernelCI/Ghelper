@@ -104,6 +104,14 @@ def find_new_version(version_number, argument_version):
     except:
         pass
 
+def get_revision_prefix(filename):
+    import hashlib
+    h = hashlib.blake2b()
+    h.update(filename.encode('ascii'))
+    print(h.hexdigest()[0:2])
+    return h.hexdigest()[0:2]
+
+
 def is_revision(new_version, revision):
     # Download the kernel base file (still need to be patched)
     # in case of a revision download it from the
@@ -125,8 +133,9 @@ def is_revision(new_version, revision):
         else:
             try:
                 print("Try getting "+kernel_tarxz+" from distfiles")
+                revision_prefix = get_revision_prefix(kernel_tarxz)
                 urlretrieve("http://distfiles.gentoo.org/distfiles/" +
-                            kernel_tarxz, kernel_tarxz)
+                            revision_prefix + "/" + kernel_tarxz, kernel_tarxz)
             except:
                 kernel_tarxz = "linux-" + new_version + ".tar.gz"
                 print("getting "+kernel_tarxz+" from git.kernel.org")
