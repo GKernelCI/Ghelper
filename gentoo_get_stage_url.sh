@@ -50,7 +50,7 @@ CHECK_SIG=1
 
 found_latest()
 {
-  RFS_BPATH=/releases/$ARCH/autobuilds
+  RFS_BPATH=releases/$ARCH/autobuilds
   BASEURL=$RFS_BASE$RFS_BPATH
   case $ARCH in
   arm)
@@ -84,7 +84,8 @@ found_latest()
     fi
   fi
   echo "ROOTFS_LATEST=$BASEURL/$LATEST_TXT"
-  LATEST=$(grep -v ^# $LATEST_TXT | cut -d' ' -f1)
+  LATEST=$(grep -v ^# $LATEST_TXT | grep stage3 | cut -d' ' -f1)
+  echo LATEST=$LATEST
   return 0
 }
 

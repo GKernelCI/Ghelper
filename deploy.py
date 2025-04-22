@@ -48,7 +48,7 @@ def boot():
         qarch = "sparc64"
         larch = "sparc"
     if re.search("CONFIG_X86_64=", kconfigs):
-        arch = "x86_64"
+        arch = "amd64"
         qarch = "x86_64"
         larch = "x86_64"
     if re.search("CONFIG_X86=", kconfigs) and not re.search("CONFIG_X86_64=", kconfigs):
