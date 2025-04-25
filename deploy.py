@@ -276,10 +276,12 @@ kdir = "%s/%s" % (args.fileserver, relpath)
 
 ret = boot()
 if ret != 0:
+    print("DEBUG boot() returned nonzero code: " + str(ret))
     sys.exit(1)
 
 # We should have generated at least one job
 if len(boots) == 0 and not args.noact:
+    print("DEBUG no job was generated")
     sys.exit(1)
 
 def dump_log(jobid, labname, server):
@@ -293,7 +295,8 @@ def dump_log(jobid, labname, server):
     fd = open("%s/%s.log.txt" % (lablogdir, jobid), 'w')
     try:
         r = server.scheduler.job_output(jobid)
-    except xmlrpc.client.Fault:
+    except xmlrpc.client.Fault as e:
+        print("DEBUG failed to get job output: xmlrpc.client.Fault: " + str(e))
         return 1
     logs = yaml.unsafe_load(r.data)
     for line in logs:
@@ -374,6 +377,7 @@ if len(boots) > 0 and args.waitforjobsend:
                 except TimeoutError as e:
                     print(e)
     if not all_jobs_success:
+        print("DEBUG not all jobs were successful")
         sys.exit(1)
 
 print(boots)
