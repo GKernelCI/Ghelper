@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEBUG=0
-RFS_BASE=http://ftp.free.fr/mirrors/ftp.gentoo.org/
+RFS_BASE=http://gentoo-mirror.flux.utah.edu/
 
 debug() {
   if [ $DEBUG -ge 1 ];then
