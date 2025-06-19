@@ -16,7 +16,9 @@ fi
 BUILD_NUMBER=$3
 FILESERVER=/var/www/fileserver/
 LAVA_SERVER=140.211.166.171:10080
-STORAGE_SERVER=140.211.166.173:8080
+if [ -z $STORAGE_SERVER ]; then
+  STORAGE_SERVER=140.211.166.173:8080
+fi
 SCRIPT_DIR=$(cd "$(dirname "$0")"|| exit;pwd)
 
 usage() {
