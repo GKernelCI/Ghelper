@@ -79,7 +79,7 @@ templates:
         extra_options:
         - '-vga virtio'
   - name: qemu x86_64
-    arch: x86_64
+    arch: amd64
     devicetype: qemu
     devicename: qemu-x86_64
     kernelfile: bzImage
