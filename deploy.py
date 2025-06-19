@@ -50,7 +50,7 @@ def boot():
     if re.search("CONFIG_X86_64=", kconfigs):
         arch = "amd64"
         qarch = "x86_64"
-        larch = "x86_64"
+        larch = "amd64"
     if re.search("CONFIG_X86=", kconfigs) and not re.search("CONFIG_X86_64=", kconfigs):
         arch = "x86"
         qarch = "i386"
