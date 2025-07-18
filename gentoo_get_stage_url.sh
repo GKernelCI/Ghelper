@@ -113,7 +113,7 @@ if [ $CHECK_SIG -eq 1 ];then
   fi
 
   debug "DEBUG: curl $LATEST"
-  curl -s "$BASEURL/$LATEST" -o $(basename $LATEST)
+  wget -q -N "$BASEURL/$LATEST"
   RET=$?
   if [ $RET -ne 0 ];then
     echo "ERROR: fail to download $BASEURL/$LATEST"
