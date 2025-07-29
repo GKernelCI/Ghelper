@@ -242,7 +242,7 @@ for i in filenames:
         #experimental.append(i)
         os.unlink(i)
 # remove 0000_README file from the list
-base.pop(1)
+base.remove("0000_README")
 print("base patch")
 print(sorted(base))
 print("extra patch")
