@@ -176,6 +176,8 @@ if revision==False:
     if len(new_version_split) == 2:
         incremental_patch_version = new_version
         revision = '0'
+    elif int(revision) == 1:
+        incremental_patch_version = new_version + "." + revision
     else:
         incremental_patch_version = new_version + "." + str(old_revision) + \
             "-" + revision
