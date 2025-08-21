@@ -241,8 +241,8 @@ for i in filenames:
     if re.match(r'^[34]', i):
         extra.append(i)
     if re.match(r'^50', i):
-        #experimental.append(i)
-        os.unlink(i)
+        experimental.append(i)
+        #os.unlink(i)
 # remove 0000_README file from the list
 base.remove("0000_README")
 print("base patch")
