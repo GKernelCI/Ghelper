@@ -9,6 +9,9 @@ MAKEOPTS="-j$(( $NBCPU + 1 ))"
 #get script direcotory
 SCRIPT_DIR=$(cd "$(dirname "$0")"|| exit;pwd)
 
+# temporary fix for experimental patches
+CONFIG_X86_64_VERSION=1
+
 if [ $# -lt 1 ]; then
   echo "Usage: $(basename $0) arch BUILDER_NAME BUILD_NUMBER [build|modules]"
   exit 1
