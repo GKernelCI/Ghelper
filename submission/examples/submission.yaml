@@ -1,0 +1,122 @@
+version:
+  major: 5
+  minor: 3
+
+# TODO: builds should include timestamps of every step for the _timestamp field
+# TODO: log_url should be hosted somewhere and permanently accessible
+# TODO: figure out what to do with issues and incidents. are these even relevant to gkci?
+# TODO: is this the correct use of "id" fields?
+# TODO: is the git_repository_url accurate in the first checkout, since we aren't retrieving via git?
+# TODO: patchset_hash is missing, not sure how to generate it
+
+# trying to use https://gkernelci.gentoo.org/#/builders/26/builds/76 as an example
+checkouts:
+  - id: "gkci:linux-8ad6ee8c16640c433f2c8b12480c69aaf5154f66"
+    origin: "gkci"
+    tree_name: "mainline"
+    git_repository_url: "https://cdn.kernel.org/pub/linux/kernel/v6.x/incr/patch-6.16.8-9.xz" # validation script doesn't allow http (only https) but cdn.kernel.org might not support https
+    git_repository_branch: "6.16"
+    git_repository_branch_tip: false
+    patchset_files:
+      - name: 1000_linux-6.16.1.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1000_linux-6.16.1.patch?h=6.16"
+      - name: 1001_linux-6.16.2.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1001_linux-6.16.2.patch?h=6.16"
+      - name: 1002_linux-6.16.3.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1002_linux-6.16.3.patch?h=6.16"
+      - name: 1003_linux-6.16.4.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1003_linux-6.16.4.patch?h=6.16"
+      - name: 1004_linux-6.16.5.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1004_linux-6.16.5.patch?h=6.16"
+      - name: 1005_linux-6.16.6.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1005_linux-6.16.6.patch?h=6.16"
+      - name: 1006_linux-6.16.7.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1006_linux-6.16.7.patch?h=6.16"
+      - name: 1007_linux-6.16.8.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1007_linux-6.16.8.patch?h=6.16"
+      - name: 1008_linux-6.16.9.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1008_linux-6.16.9.patch?h=6.16"
+      - name: 1510_fs-enable-link-security-restrictions-by-default.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1510_fs-enable-link-security-restrictions-by-default.patch?h=6.16"
+      - name: 1700_sparc-address-warray-bound-warnings.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1700_sparc-address-warray-bound-warnings.patch?h=6.16"
+      - name: 1730_parisc-Disable-prctl.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/1730_parisc-Disable-prctl.patch?h=6.16"
+      - name: 2000_BT-Check-key-sizes-only-if-Secure-Simple-Pairing-enabled.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/2000_BT-Check-key-sizes-only-if-Secure-Simple-Pairing-enabled.patch?h=6.16"
+      - name: 2901_permit-menuconfig-sorting.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/2901_permit-menuconfig-sorting.patch?h=6.16"
+      - name: 2920_sign-file-patch-for-libressl.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/2920_sign-file-patch-for-libressl.patch?h=6.16"
+      - name: 2990_libbpf-v2-workaround-Wmaybe-uninitialized-false-pos.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/2990_libbpf-v2-workaround-Wmaybe-uninitialized-false-pos.patch?h=6.16"
+      - name: 2991_libbpf_add_WERROR_option.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/2991_libbpf_add_WERROR_option.patch?h=6.16"
+      - name: 3000_Support-printing-firmware-info.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/3000_Support-printing-firmware-info.patch?h=6.16"
+      - name: 4567_distro-Gentoo-Kconfig.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/4567_distro-Gentoo-Kconfig.patch?h=6.16"
+      - name: 5010_enable-cpu-optimizations-universal.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/5010_enable-cpu-optimizations-universal.patch?h=6.16"
+      - name: 5020_BMQ-and-PDS-io-scheduler-v6.16-r0.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/5020_BMQ-and-PDS-io-scheduler-v6.16-r0.patch?h=6.16"
+      - name: 5021_BMQ-and-PDS-gentoo-defaults.patch
+        url: "https://gitweb.gentoo.org/proj/linux-patches.git/plain/5021_BMQ-and-PDS-gentoo-defaults.patch?h=6.16"
+    git_commit_hash: "a3c256e1f2e1b60c0d02a2cf19e76b4dcf0c5df3"
+    valid: true
+  - id: "gkci:linux-patches-fb4386cb8d3a0e3944fcbd135b1a7c53cd28d3ad"
+    origin: "gkci"
+    git_repository_url: "https://anongit.gentoo.org/git/proj/linux-patches.git"
+    git_repository_branch: "6.16"
+    git_repository_branch_tip: true
+    git_commit_hash: fb4386cb8d3a0e3944fcbd135b1a7c53cd28d3ad
+    git_commit_message: "Linux patch 6.16.9\n\nSigned-off-by: Arisu Tachibana <alicef@gentoo.org>"
+  - id: "gkci:Ghelper-main"
+    origin: "gkci"
+    git_repository_url: "https://github.com/GKernelCI/Ghelper.git"
+    git_repository_branch: "main"
+    git_repository_branch_tip: true
+    git_commit_hash: 8ad6ee8c16640c433f2c8b12480c69aaf5154f66
+    git_commit_message: "Add fix for experimental patches\n\nSigned-off-by: Arisu Tachibana <arisu.tachibana@miraclelinux.com>"
+
+builds:
+  - id: "gkci:linux-8ad6ee8c16640c433f2c8b12480c69aaf5154f66"
+    origin: "gkci"
+    checkout_id: "gkci:linux-8ad6ee8c16640c433f2c8b12480c69aaf5154f66"
+    architecture: "x86_64"
+    start_time: "2025-09-25T12:12:55+00:00"
+    status: "PASS"
+    duration: 519.154513
+    command: "/bin/bash build-kernel.sh amd64 6.16:amd64:gcc 76"
+    compiler: "gcc"
+    log_url: https://gkernelci.gentoo.org/api/v2/logs/29973/raw_inline
+
+tests:
+  - id: "gkci:builders-26-build-76"
+    origin: "gkci"
+    build_id: "gkci:builders-26-build-76"
+    start_time: "2025-09-25T12:12:55+00:00"
+    status: "PASS"
+    log_excerpt: "{'gentoo': {2053: {'devicename': 'qemu-x86_64', 'health': 'Complete', 'state': 'Finished'}}}"
+
+issues:
+  - id: "ci1:issue-1"
+    version: 1
+    origin: "ci1"
+    categories:
+      - "runtime.oops"
+    report_url: "https://bugzilla.kernel.org/show_bug.cgi?id=207065"
+    report_subject: "Kernel crash in net/core/dev.c"
+    culprit:
+      code: true
+      tool: false
+      harness: false
+
+incidents:
+  - id: "ci1:incident-1"
+    origin: "ci1"
+    issue_id: "ci1:issue-1"
+    issue_version: 1
+    build_id: "ci1:build-123"
+    test_id: "ci1:test-123"
+    present: true

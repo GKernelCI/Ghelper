@@ -1,0 +1,25 @@
+on:
+  push:
+    branch:
+      - main
+
+name: 'Validate: Expected KCIDB Submission'
+
+jobs:
+  validate:
+    name: Validate KCIDB Submission
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r submission/examples/validate/requirements.txt
+    - name: Validate expected submission
+      run: |
+        cd submission/examples
+        python3 validate/validate.py
